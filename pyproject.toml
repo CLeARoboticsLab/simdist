@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "simdist"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "flax==0.10.4",
+    "hydra-core==1.3.2",
+    "jax[cuda]==0.6.0",
+    "numpy==1.26.4",
+    "optax==0.2.4",
+    "orbax-checkpoint==0.11.25",
+    "pytest",
+    "tqdm",
+    "wandb",
+]
+
+[tool.setuptools.packages.find]
+include = ["simdist"]
