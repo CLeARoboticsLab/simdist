@@ -28,7 +28,6 @@ cd simdist
 Install simdist:
 
 ```bash
-cd simdist
 pip install -e .
 ```
 

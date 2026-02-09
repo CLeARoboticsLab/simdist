@@ -216,3 +216,7 @@ __marimo__/
 .streamlit/secrets.toml
 
 .flake8
+
+wandb/
+outputs/
+checkpoints/

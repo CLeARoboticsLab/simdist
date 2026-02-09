@@ -111,11 +111,10 @@ def main(
 
     # specify directory for logging experiments
     log_root_path = get_rl_checkpoint_dir()
-    print(f"[INFO] Logging experiment in directory: {log_root_path}")
-    # specify directory for logging runs: {time-stamp}_{run_name}
-    log_dir = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    # This way, the Ray Tune workflow can extract experiment name.
-    print(f"RL Checkpoint name: {log_dir}")
+    run_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    log_dir = os.path.join(log_root_path, run_name)
+    os.makedirs(log_dir, exist_ok=True)
+    print(f"[INFO] Logging experiment in directory: {log_dir}")
 
     # create isaac environment
     env = gym.make(
