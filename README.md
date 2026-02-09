@@ -31,3 +31,11 @@ Install simdist:
 cd simdist
 pip install -e .
 ```
+
+## RL Policy Training
+
+To train, use the below. RL runs are saved to `~/simdist/checkpoints/rl/`. The environment config is found in `~/simdist/simdist/rl/go2.py` and the PPO config is found in `~~/simdist/simdist/rl/rsl_rl_ppo_cfg.py`.
+
+```bash
+python scripts/train_rl.py --task Go2 --headless
+```
