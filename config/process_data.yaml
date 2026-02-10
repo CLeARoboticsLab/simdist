@@ -1,0 +1,12 @@
+defaults:
+  - system: go2
+
+dataset_name:
+history_length: 25
+prediction_length: 25
+
+# Don't include this many steps at the beginning of an episode in the dataset
+beg_padding: 5
+
+# Don't include this many steps at the end of an episode in the dataset
+end_padding: 5

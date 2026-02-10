@@ -55,8 +55,14 @@ python scripts/export_policies.py -r <run_folder_name>
 
 ## Data Generation
 
-Generate data with the below, replacing `<run_folder_name>` with the name of the folder from training that is found in `~/simdist/checkpoints/rl/` (for example: `2025-03-14_05-14-42`).. This will save data to `~/simdist/datasets/sim/`. The configuration for data generation is found in `~/simdist/config/generate_data.yaml`.
+Generate data with the below, replacing `<run_folder_name>` with the name of the folder from training that is found in `~/simdist/checkpoints/rl/` (for example: `2025-03-14_05-14-42`). This will save data to `~/simdist/datasets/sim/`. The configuration for data generation is found in `~/simdist/config/generate_data.yaml`.
 
 ```bash
 python scripts/generate_data.py rl_run=<run_folder_name>
+```
+
+Next, post-process the data with the below, replacing `<dataset_name>` with the name of the dataset in `~/simdist/datasets/sim/`. This script concatenates all of the episodes into single dataset files and computes parameters for input/output scaling. The configuration for data processing is found in `~/simdist/config/process_data.yaml`. The processed dataset is saved to `~/simdist/datasets/sim/<dataset_name>/processed_data_{system}_{pred_len}_{hist_len}`.
+
+```bash
+python scripts/process_data.py dataset_name=<dataset_name>
 ```

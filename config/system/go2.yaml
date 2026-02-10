@@ -1,3 +1,41 @@
+name: go2
+
+# Proprioceptive observations. Noise specified is added during data
+# augmentation during pretraining.
+proprio_obs:
+  types:
+    - name: base_lin_vel
+      dim: 3
+      noise: 0.05
+    - name: base_ang_vel
+      dim: 3
+      noise: 0.1
+    - name: projected_gravity
+      dim: 3
+      noise: 0.025
+    - name: joint_pos
+      dim: 12
+      noise: 0.01
+    - name: joint_vel
+      dim: 12
+      noise: 0.75
+    - name: cos_sin_phase
+      dim: 2
+      noise: 0.001
+
+# Exteroceptive observations. Noise specified is added during data
+# augmentation during pretraining.
+extero_obs:
+  types:
+    - name: height_scan
+      dim: [21, 15]
+      noise: 0.02
+
+# Command to the robot.
+cmd:
+  dim: 3
+
+# Action space. Noise specified is added during data generation. 
 actions:
   - name: FR_hip_joint
     min_noise: 0.05
