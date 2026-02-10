@@ -1,3 +1,7 @@
+from typing import Any
+import math
+import functools as ft
+
 from isaaclab.utils import configclass
 from isaaclab_tasks.manager_based.locomotion.velocity.config.go2.rough_env_cfg import (
     UnitreeGo2RoughEnvCfg,
@@ -10,7 +14,6 @@ from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.managers import EventTermCfg as EventTerm
 from isaaclab.managers import SceneEntityCfg
 import isaaclab_tasks.manager_based.locomotion.velocity.mdp as mdp
-from simdist.rl import go2_mdp
 import isaaclab_tasks.manager_based.locomotion.velocity.config.spot.mdp as spot_mdp
 import isaaclab.terrains as terrain_gen
 from isaaclab.sensors import RayCasterCfg, patterns, ImuCfg
@@ -24,9 +27,8 @@ from isaaclab.managers.recorder_manager import (
 )
 from isaaclab.utils.noise import AdditiveGaussianNoiseCfg as Gnoise
 import torch
-from typing import Any
-import math
-import functools as ft
+
+from simdist.rl import go2_mdp
 
 USE_FOOT_FORCE_OBS = True
 USE_FOOT_HEIGHT_OBS = True

@@ -1,3 +1,5 @@
+"""Script to generate data using Isaac Sim."""
+
 print("Starting Isaac Sim")
 from isaaclab.app import AppLauncher
 
@@ -7,6 +9,7 @@ simulation_app = app_launcher.app
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
+
 from simdist.utils.paths import get_generate_data_hydra_config
 from simdist.data.data_recorder import DataRecorder
 

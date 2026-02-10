@@ -73,11 +73,11 @@ from isaaclab.envs import (
 )
 from isaaclab.utils.dict import print_dict
 from isaaclab.utils.io import dump_pickle, dump_yaml
+from isaaclab_tasks.utils import get_checkpoint_path
+from isaaclab_tasks.utils.hydra import hydra_task_config
 
 from simdist import rl  # noqa: F401
 from simdist.utils.paths import get_rl_checkpoint_dir
-from isaaclab_tasks.utils import get_checkpoint_path
-from isaaclab_tasks.utils.hydra import hydra_task_config
 
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True

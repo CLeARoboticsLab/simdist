@@ -1,8 +1,10 @@
-import torch
-from datetime import datetime
-from tqdm import trange
-import yaml
 import os
+from datetime import datetime
+import yaml
+
+import torch
+from tqdm import trange
+
 from simdist.rl.go2 import Go2RecordEnvCfg, ManagerBasedRLEnvRecord
 from simdist.utils.torch import get_actor_critic_from_iteration
 from simdist.utils import paths
@@ -46,7 +48,7 @@ class DataRecorder:
         env_cfg = Go2RecordEnvCfg()
         env_cfg.seed = seed
         env_cfg.recorders.dataset_export_dir_path = dataset_path
-        env_cfg.recorders.dataset_filename = paths.get_raw_sim_data_filename()
+        env_cfg.recorders.dataset_filename = paths.get_raw_data_filename()
         env_cfg.scene.num_envs = self.N
 
         self.env = ManagerBasedRLEnvRecord(env_cfg, self.critic)

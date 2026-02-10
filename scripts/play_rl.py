@@ -72,10 +72,10 @@ from rsl_rl.runners import OnPolicyRunner
 
 from isaaclab.envs import DirectMARLEnv, multi_agent_to_single_agent
 from isaaclab.utils.dict import print_dict
+from isaaclab_tasks.utils import parse_env_cfg
 
 from simdist import rl  # noqa: F401
 from simdist.utils.paths import get_rl_run_dir, get_highest_numbered_file
-from isaaclab_tasks.utils import parse_env_cfg
 
 
 def main():

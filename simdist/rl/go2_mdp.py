@@ -1,3 +1,7 @@
+import functools as ft
+from typing import Tuple, List, Sequence, Literal
+from dataclasses import MISSING
+
 from isaaclab.envs import ManagerBasedRLEnv, ManagerBasedEnv
 from isaaclab.managers import (
     SceneEntityCfg,
@@ -18,9 +22,6 @@ from isaaclab.utils import configclass
 import isaaclab.utils.math as math_utils
 from isaaclab.terrains import TerrainImporter
 import torch
-import functools as ft
-from typing import Tuple, List, Sequence, Literal
-from dataclasses import MISSING
 
 
 def cos_sin_phase(env: ManagerBasedRLEnv, period: float = 0.5) -> torch.Tensor:
