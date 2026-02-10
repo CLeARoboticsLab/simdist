@@ -24,7 +24,7 @@ sudo apt install cmake build-essential
 cd
 git clone --recurse-submodules https://github.com/CLeARoboticsLab/simdist.git
 cd simdist
-./IsaacLab/isaaclab.sh -i rsl_rl
+./IsaacLab/isaaclab.sh -i none
 ```
 
 Install simdist:
@@ -35,14 +35,20 @@ pip install -e .
 
 ## Expert Policy Training
 
-To train, use the below. Runs are saved to `~/simdist/checkpoints/rl/`. The environment config is found in `~/simdist/simdist/rl/go2.py` and the PPO config is found in `~~/simdist/simdist/rl/rsl_rl_ppo_cfg.py`.
+To train, use the below, replacing `<wandb_username>` with your Weights and Biases username. Runs are saved to `~/simdist/checkpoints/rl/`. The environment config is found in `~/simdist/simdist/rl/go2.py` and the PPO config is found in `~~/simdist/simdist/rl/rsl_rl_ppo_cfg.py`.
 
 ```bash
-python scripts/train_rl.py --task Go2 --headless
+WANDB_USERNAME=<wandb_username> python scripts/train_rl.py --task Go2 --headless
 ```
 
 To visualize and play an expert policy, use the below, replacing `<run_folder_name>` with the name of the folder from training that is found in `~/simdist/checkpoints/rl/` (for example: `2025-03-14_05-14-42`).
 
 ```bash
 python scripts/play_rl.py --task Go2Play --num_envs 32 -r <run_folder_name> --real-time
+```
+
+After rl training, export the policies and value functions with the below, replacing `<run_folder_name>` with the name of the folder from training that is found in `~/simdist/checkpoints/rl/` (for example: `2025-03-14_05-14-42`).
+
+```bash
+python scripts/export_policies.py -r <run_folder_name>
 ```

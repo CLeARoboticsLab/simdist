@@ -14,6 +14,7 @@ dependencies = [
     "optax==0.2.4",
     "orbax-checkpoint==0.11.25",
     "pytest",
+    "rsl-rl-lib==2.2.1",
     "tqdm",
     "wandb",
 ]

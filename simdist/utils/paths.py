@@ -14,6 +14,21 @@ def get_rl_checkpoint_dir():
     return _PATHS["RL_CHECKPOINTS"]
 
 
+def get_rl_run_dir(rl_run: str):
+    """Get the directory for a specific RL run."""
+    return os.path.join(get_rl_checkpoint_dir(), rl_run)
+
+
+def get_rl_policies_dir(rl_run: str):
+    """Get the directory for RL policies."""
+    return os.path.join(get_rl_run_dir(rl_run), "policies")
+
+
+def get_rl_critics_dir(rl_run: str):
+    """Get the directory for RL critics."""
+    return os.path.join(get_rl_run_dir(rl_run), "critics")
+
+
 def get_highest_numbered_file(folder_path, prefix, suffix):
     """
     Returns the file with the highest number in the given folder.
