@@ -74,7 +74,7 @@ from isaaclab.envs import DirectMARLEnv, multi_agent_to_single_agent
 from isaaclab.utils.dict import print_dict
 
 from simdist import rl  # noqa: F401
-from simdist.utils.paths import get_rl_checkpoint_dir, get_highest_numbered_file
+from simdist.utils.paths import get_rl_run_dir, get_highest_numbered_file
 from isaaclab_tasks.utils import parse_env_cfg
 
 
@@ -91,9 +91,7 @@ def main():
         args_cli.task, args_cli
     )
 
-    log_root_path = get_rl_checkpoint_dir()
-    run_name = args_cli.rl_run
-    log_dir = os.path.join(log_root_path, run_name)
+    log_dir = get_rl_run_dir(args_cli.rl_run)
     model_name = get_highest_numbered_file(log_dir, "model", ".pt")
     resume_path = os.path.join(log_dir, model_name)
     print(f"[INFO] Loading model checkpoint from: {resume_path}")
