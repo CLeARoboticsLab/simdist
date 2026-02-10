@@ -220,3 +220,4 @@ __marimo__/
 wandb/
 outputs/
 checkpoints/
+datasets/

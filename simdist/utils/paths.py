@@ -6,7 +6,11 @@ SIMDIST_MODULE_PATH = os.path.dirname(THIS_MODULE_PATH)
 SIMDIST_ROOT_PATH = os.path.dirname(SIMDIST_MODULE_PATH)
 _PATHS = {
     "RL_CHECKPOINTS": os.path.join(SIMDIST_ROOT_PATH, "checkpoints", "rl"),
+    "CONFIG": os.path.join(SIMDIST_ROOT_PATH, "config"),
+    "SIM_DATASETS": os.path.join(SIMDIST_ROOT_PATH, "datasets", "sim"),
+    "REAL_DATASETS": os.path.join(SIMDIST_ROOT_PATH, "datasets", "real"),
 }
+_FILENAMES = {"RAW_SIM_DATA_FILE_NAME": "rl_raw_data.hdf5"}
 
 
 def get_rl_checkpoint_dir():
@@ -50,3 +54,27 @@ def get_highest_numbered_file(folder_path, prefix, suffix):
             numbered_files.append((int(match.group(1)), filename))
 
     return max(numbered_files, key=lambda x: x[0])[1] if numbered_files else None
+
+
+def get_config_dir():
+    """Get the directory for configuration files."""
+    return _PATHS["CONFIG"]
+
+
+def get_generate_data_hydra_config():
+    return {"config_path": get_config_dir(), "config_name": "generate_data"}
+
+
+def get_sim_dataset_dir(dataset_name: str):
+    """Get the directory for a specific simulation dataset."""
+    return os.path.join(_PATHS["SIM_DATASETS"], dataset_name)
+
+
+def get_real_dataset_dir(dataset_name: str):
+    """Get the directory for a specific real dataset."""
+    return os.path.join(_PATHS["REAL_DATASETS"], dataset_name)
+
+
+def get_raw_sim_data_filename():
+    """Get the filename for the raw simulation data."""
+    return _FILENAMES["RAW_SIM_DATA_FILE_NAME"]

@@ -497,3 +497,188 @@ class Go2PlayEnvCfg(Go2EnvCfg):
         self.curriculum.joint_friction_difficulty = None
 
         self.events.push_robot = None
+
+
+class ManagerBasedRLEnvRecord(ManagerBasedRLEnv):
+    def __init__(
+        self,
+        cfg: ManagerBasedRLEnvCfg,
+        critic: Any,
+        render_mode: str | None = None,
+        **kwargs,
+    ):
+        super().__init__(cfg, render_mode, **kwargs)
+        self.critic = critic
+        self.expert_policy_flag_buf = None
+
+
+@configclass
+class HardwareObsCfg(ObsGroup):
+    """Observations for policy group."""
+
+    # observation terms (order preserved)
+    base_lin_vel = ObsTerm(func=mdp.base_lin_vel)
+    base_lin_acc = ObsTerm(
+        func=mdp.imu_lin_acc,
+        params={
+            "asset_cfg": SceneEntityCfg(name="imu_body"),
+        },
+    )
+    base_ang_vel = ObsTerm(func=mdp.base_ang_vel)
+    projected_gravity = ObsTerm(func=mdp.projected_gravity)
+    joint_pos = ObsTerm(func=mdp.joint_pos_rel, params=_get_joint_params())
+    joint_vel = ObsTerm(func=mdp.joint_vel_rel, params=_get_joint_params())
+    cos_sin_phase = ObsTerm(
+        func=go2_mdp.cos_sin_phase, params={"period": WALKING_PERIOD}
+    )
+    height_scan = ObsTerm(
+        func=mdp.height_scan,
+        params={
+            "sensor_cfg": SceneEntityCfg("height_scanner"),
+            "offset": HEIGHT_SCAN_OFFSET,
+        },
+        clip=(-2.0, 2.0),
+    )
+
+    def __post_init__(self):
+        self.enable_corruption = False
+        self.concatenate_terms = False
+
+
+class TransformerObservationsRecorder(RecorderTerm):
+    def record_pre_step(self):
+        return "obs", self._env.obs_buf["recorded_obs"]
+
+
+class PreStepCommandsRecorder(RecorderTerm):
+    def record_pre_step(self):
+        return "commands", self._env.command_manager.get_command("base_velocity")
+
+
+class RewardRecorder(RecorderTerm):
+    def record_post_step(self):
+        return "reward", self._env.reward_buf
+
+
+class ValueRecorder(RecorderTerm):
+    def record_post_step(self):
+        with torch.no_grad():
+            return "value", self._env.critic(self._env.obs_buf["policy"]).squeeze()
+
+
+class ExpertPolicyFlagRecorder(RecorderTerm):
+    def record_pre_step(self):
+        with torch.no_grad():
+            return "expert_policy_flag", self._env.expert_policy_flag_buf.squeeze()
+
+
+@configclass
+class TransformerObservationsRecorderCfg(RecorderTermCfg):
+    class_type: type[RecorderTerm] = TransformerObservationsRecorder
+
+
+@configclass
+class ExpertPolicyFlagRecorderCfg(RecorderTermCfg):
+    class_type: type[RecorderTerm] = ExpertPolicyFlagRecorder
+
+
+@configclass
+class PreStepCommandsRecorderCfg(RecorderTermCfg):
+    class_type: type[RecorderTerm] = PreStepCommandsRecorder
+
+
+@configclass
+class PreStepValueRecorderCfg(RecorderTermCfg):
+    class_type: type[RecorderTerm] = ValueRecorder
+
+
+@configclass
+class PostStepRewardRecorderCfg(RecorderTermCfg):
+    class_type: type[RecorderTerm] = RewardRecorder
+
+
+@configclass
+class TransformerRecorderManagerCfg(RecorderManagerBaseCfg):
+
+    record_pre_step_obs = TransformerObservationsRecorderCfg()
+    record_pre_step_actions = PreStepActionsRecorderCfg()
+    record_pre_step_expert_policy_flag = ExpertPolicyFlagRecorderCfg()
+    record_pre_step_commands = PreStepCommandsRecorderCfg()
+    record_post_step_reward = PostStepRewardRecorderCfg()
+    record_pre_step_value = PreStepValueRecorderCfg()
+
+
+class Go2RecordEnvCfg(Go2EnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+
+        self.observations.recorded_obs = HardwareObsCfg()
+        self.recorders = TransformerRecorderManagerCfg()
+
+        # spawn the robot randomly instead of according to curriculum
+        self.scene.terrain.max_init_terrain_level = None
+        self.curriculum.terrain_levels = None
+        self.scene.terrain.terrain_generator.curriculum = False
+
+        # disable joint curriculum
+        self.curriculum.joint_stiffness_and_damping_difficulty = None
+        self.curriculum.joint_friction_difficulty = None
+
+        self.observations.policy.enable_corruption = False
+        self.events.push_robot = None
+
+
+class Go2SimEnvCfg(Go2EnvCfg):
+    def __post_init__(self):
+        super().__post_init__()
+
+        self.scene.num_envs = 1
+
+        self.observations.obs = HardwareObsCfg()
+        self.observations.policy.enable_corruption = False
+
+        # no terrain curriculum
+        self.curriculum.terrain_levels = None
+
+        # disable joint curriculum
+        self.curriculum.joint_stiffness_and_damping_difficulty = None
+        self.curriculum.joint_friction_difficulty = None
+
+        # add a plane terrain option
+        self.scene.terrain.terrain_generator.sub_terrains["plane"] = (
+            terrain_gen.MeshPlaneTerrainCfg(proportion=0.1)
+        )
+
+        # remove randomization
+        self.events.physics_material.params["static_friction_range"] = (0.8, 0.8)
+        self.events.physics_material.params["dynamic_friction_range"] = (0.6, 0.6)
+        self.events.physics_material.params["restitution_range"] = (0.05, 0.05)
+        self.events.reset_robot_joints = None
+        self.events.reset_base.params = {
+            "pose_range": {"x": (0.0, 0.0), "y": (0.0, 0.0), "yaw": (0.0, 0.0)},
+            "velocity_range": {
+                "x": (0.0, 0.0),
+                "y": (0.0, 0.0),
+                "z": (0.0, 0.0),
+                "roll": (0.0, 0.0),
+                "pitch": (0.0, 0.0),
+                "yaw": (0.0, 0.0),
+            },
+        }
+
+        # uniform velocity command
+        # vel and ranges should be set after creating this cfg
+        self.commands.base_velocity = go2_mdp.WalkStraightCommandCfg(
+            asset_name="robot",
+            forward_vel=0.0,
+            kx=1.0,
+            ky=1.0,
+            kyaw=1.0,
+            debug_vis=True,
+            ranges=go2_mdp.WalkStraightCommandCfg.Ranges(
+                lin_vel_x=(-0.5, 1.5),
+                lin_vel_y=(-0.5, 0.5),
+                ang_vel_z=(-1.0, 1.0),
+            ),
+            resampling_time_range=(1000.0, 1000.0),
+        )

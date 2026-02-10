@@ -52,3 +52,11 @@ After rl training, export the policies and value functions with the below, repla
 ```bash
 python scripts/export_policies.py -r <run_folder_name>
 ```
+
+## Data Generation
+
+Generate data with the below, replacing `<run_folder_name>` with the name of the folder from training that is found in `~/simdist/checkpoints/rl/` (for example: `2025-03-14_05-14-42`).. This will save data to `~/simdist/datasets/sim/`. The configuration for data generation is found in `~/simdist/config/generate_data.yaml`.
+
+```bash
+python scripts/generate_data.py rl_run=<run_folder_name>
+```

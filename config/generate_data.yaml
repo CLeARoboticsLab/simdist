@@ -1,0 +1,38 @@
+defaults:
+  - system: go2
+
+rl_run:
+envs: 4096
+steps: 25000
+seed: 42
+
+expert: 15 #4999  # The iteration number of the expert policy
+expert_prob: 0.5  # Probability of using the expert policy
+
+# The iteration numbers of the non-expert policies
+non_experts:
+  - 0
+  - 50
+  - 100
+  - 150
+  - 200
+  - 250
+  - 300
+  - 400
+  - 500
+  - 1000
+  - 2000
+
+action_corruption:
+  never_noise_prob: 0.025  # Probability of envs never having noise
+  intervals:
+    # noise is added for a random number of consecutive steps this interval
+    noise_min: 1
+    noise_max: 50
+
+    # then, no noise is added for a random number of consecutive steps this interval
+    no_noise_min: 25
+    no_noise_max: 500
+  
+    # repeat the above two steps until data collection is done. The sampled
+    # intervals are different for each env.

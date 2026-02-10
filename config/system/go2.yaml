@@ -1,0 +1,37 @@
+actions:
+  - name: FR_hip_joint
+    min_noise: 0.05
+    max_noise: 2.5
+  - name: FR_thigh_joint
+    min_noise: 0.05
+    max_noise: 2.5
+  - name: FR_calf_joint
+    min_noise: 0.05
+    max_noise: 2.5
+  - name: FL_hip_joint
+    min_noise: 0.05
+    max_noise: 2.5
+  - name: FL_thigh_joint
+    min_noise: 0.05
+    max_noise: 2.5
+  - name: FL_calf_joint
+    min_noise: 0.05
+    max_noise: 2.5
+  - name: RR_hip_joint
+    min_noise: 0.05
+    max_noise: 2.5
+  - name: RR_thigh_joint
+    min_noise: 0.05
+    max_noise: 2.5
+  - name: RR_calf_joint 
+    min_noise: 0.05
+    max_noise: 2.5
+  - name: RL_hip_joint
+    min_noise: 0.05
+    max_noise: 2.5
+  - name: RL_thigh_joint
+    min_noise: 0.05
+    max_noise: 2.5
+  - name: RL_calf_joint
+    min_noise: 0.05
+    max_noise: 2.5
