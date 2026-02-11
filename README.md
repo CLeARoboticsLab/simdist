@@ -35,7 +35,7 @@ pip install -e .
 
 ## Expert Policy Training
 
-To train, use the below, replacing `<wandb_username>` with your Weights and Biases username. Runs are saved to `~/simdist/checkpoints/rl/`. The environment config is found in `~/simdist/simdist/rl/go2.py` and the PPO config is found in `~~/simdist/simdist/rl/rsl_rl_ppo_cfg.py`.
+To train, use the below, replacing `<wandb_username>` with your Weights and Biases username (if you don't have an account, create one at [https://wandb.ai/](https://wandb.ai/)). Runs are saved to `~/simdist/checkpoints/rl/`. The environment config is found in `~/simdist/simdist/rl/go2.py` and the PPO config is found in `~~/simdist/simdist/rl/rsl_rl_ppo_cfg.py`.
 
 ```bash
 WANDB_USERNAME=<wandb_username> python scripts/train_rl.py --task Go2 --headless
