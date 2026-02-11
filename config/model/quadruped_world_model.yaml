@@ -1,0 +1,24 @@
+type: quadruped_world_model
+
+dataset:
+  type: world_model
+  history_length: 25
+  prediction_length: 25
+
+dropout:
+  mlp: 0.2
+  attention: 0.05
+
+latent_dim: 64
+
+encoder:
+  mlp_hidden_size_factor: 2
+  proprio_obs_layers: 2
+  extero_obs:
+    height_cnn:
+      kernel_size: 3
+      strides: [2, 2, 2]
+      features: [8, 16, 32]
+      projection_hidden_dims: [192, 128]
+  action_layers: 0
+  latent_layers: 2

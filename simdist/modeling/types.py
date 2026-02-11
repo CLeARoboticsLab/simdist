@@ -51,6 +51,10 @@ class WorldModelSchema:
         actions: ArrayLike  # future actions from t to t+T-1 (..., T, act_dim)
         exp_pol_flags: ArrayLike  # true when act from expert policy; t to T-1 (..., T)
 
+    class Encoding(TypedDict):
+        history: ArrayLike  # encoded history of observations and actions
+        latent: ArrayLike  # encoded latent representation (from last observation)
+
     scaler_params_mapping: ScalerParamsMapping = {
         "proprio_obs_hist": "proprio_obs",
         "extero_obs": "extero_obs",
