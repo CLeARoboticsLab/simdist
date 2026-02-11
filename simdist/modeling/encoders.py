@@ -103,10 +103,6 @@ class QuadrupedEncoder(WorldModelEncoderBase):
         hist_enc = hist_enc.at[:, 0::2].set(proprio_obs_hist)
         hist_enc = hist_enc.at[:, 1::2].set(act_hist)
 
-        # concatenate latent to the end of the history encoding
-        latent = jnp.expand_dims(latent, axis=1)
-        hist_enc = jnp.concatenate([hist_enc, latent], axis=1)
-
         return {"history": hist_enc, "latent": latent}
 
     def encode_latent(

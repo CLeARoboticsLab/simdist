@@ -225,6 +225,8 @@ class TransformerDecoder(nnx.Module):
 
 
 class Embedding(nnx.Module):
+    """Projection plus positional encoding"""
+
     def __init__(
         self,
         seq_len: int,
