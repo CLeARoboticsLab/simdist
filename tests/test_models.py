@@ -3,13 +3,18 @@ import time
 import pytest
 from hydra import initialize, compose
 from omegaconf import OmegaConf
-import jax.numpy as jnp
+
+from simdist.utils.jax import configure_jax_compilation_cache
+
+configure_jax_compilation_cache()
+
 import jax
 from flax import nnx
 
 from simdist.data.dataset import WorldModelDatasetBase
-from simdist.utils import model as model_utils, config
-from simdist.modeling import types, models
+from simdist.utils import model as model_utils
+from simdist.modeling import models
+from helpers import make_dummy_scaler_params
 
 REL_CONFIG_PATH = "../config"
 
@@ -38,7 +43,7 @@ def test_world_models(cfg: dict):
     num_inferences = 100
 
     # create model
-    scaler_params = _make_dummy_scaler_params(cfg)
+    scaler_params = make_dummy_scaler_params(cfg)
     model = models.get_model(cfg, scaler_params, nnx.Rngs(0))
     model_inf_fn = jax.jit(model.inference)
 
@@ -56,26 +61,3 @@ def test_world_models(cfg: dict):
         _ = jax.block_until_ready(model_inf_fn(model_in))
     end_time = time.perf_counter()
     print(f"Average inference rate: {num_inferences / (end_time - start_time):.2f} Hz")
-
-
-def _make_dummy_scaler_params(cfg: dict) -> types.ScalerParams:
-    sys_cfg = cfg["system"]
-    proprio_obs_dim = config.proprio_obs_dim_from_sys_config(sys_cfg)
-    extero_obs_dim = config.extero_obs_dim_from_sys_config(sys_cfg)
-    act_dim = config.action_dim_from_sys_config(sys_cfg)
-    cmd_dim = config.cmd_dim_from_sys_config(sys_cfg)
-
-    return {
-        "proprio_obs": {
-            "mean": jnp.zeros(proprio_obs_dim),
-            "std": jnp.ones(proprio_obs_dim),
-        },
-        "extero_obs": {
-            "mean": jnp.zeros(extero_obs_dim),
-            "std": jnp.ones(extero_obs_dim),
-        },
-        "actions": {"mean": jnp.zeros(act_dim), "std": jnp.ones(act_dim)},
-        "commands": {"mean": jnp.zeros(cmd_dim), "std": jnp.ones(cmd_dim)},
-        "rewards": {"mean": jnp.zeros(1), "std": jnp.ones(1)},
-        "values": {"mean": jnp.zeros(1), "std": jnp.ones(1)},
-    }
