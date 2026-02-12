@@ -69,7 +69,7 @@ python scripts/process_data.py dataset_name=<dataset_name>
 
 ## World Model Pretraining
 
-Pretrain the world model with the below, replacing `<dataset_name>` with the name of the dataset in `~/simdist/datasets/sim/`. Checkpoints will be saved in `~/simdist/checkpoints/rl/`; use `<run_name>` to specify the name of the checkpoints (optional). Optionally, launch with `wandb.log=true` and `wandb.entity=<your_wandb_entity_or_username>` to enable Weights and Biases logging.
+Pretrain the world model with the below, replacing `<dataset_name>` with the name of the dataset in `~/simdist/datasets/sim/`. Checkpoints will be saved in `~/simdist/checkpoints/rl/`; use `<run_name>` to specify the name of the checkpoints (optional). Optionally, launch with `wandb.log=true` and `wandb.entity=<your_wandb_entity_or_username>` to enable Weights and Biases logging. Additional configuration is found in [`config/train_model.yaml`](config/train_model.yaml).
 
 ```bash
 python scripts/train_model.py data.dataset_name=<dataset_name> run_name=<run_name>
