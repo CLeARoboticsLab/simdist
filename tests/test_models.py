@@ -1,8 +1,6 @@
 import time
 
 import pytest
-from hydra import initialize, compose
-from omegaconf import OmegaConf
 
 from simdist.utils.jax import configure_jax_compilation_cache
 
@@ -12,26 +10,9 @@ import jax
 
 import helpers
 
-REL_CONFIG_PATH = "../config"
-
-
-@pytest.fixture
-def cfg(request):
-    model_name = request.param
-    with initialize(config_path=REL_CONFIG_PATH, version_base=None):
-        cfg = compose(
-            config_name="train_model",
-            overrides=[f"model={model_name}"],
-        )
-        cfg = OmegaConf.to_container(cfg, resolve=True)
-        return cfg
-
-
 @pytest.mark.parametrize(
     "cfg",
-    [
-        "quadruped_world_model",
-    ],
+    helpers.WORLD_MODEL_CONFIGS,
     indirect=True,
 )
 def test_world_models(cfg: dict):
