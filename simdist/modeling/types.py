@@ -6,9 +6,12 @@ if TYPE_CHECKING:
     import jax.numpy as jnp
 
 
+ArrayLike = Union["np.ndarray", "jnp.ndarray"]
+
+
 class Stats(TypedDict):
-    mean: float
-    std: float
+    mean: ArrayLike
+    std: ArrayLike
 
 
 class ScalerParams(TypedDict):
@@ -19,8 +22,6 @@ class ScalerParams(TypedDict):
     rewards: Stats
     values: Stats
 
-
-ArrayLike = Union[np.ndarray, jnp.ndarray]
 
 ModelInputs = dict[str, ArrayLike]
 ModelOutputs = dict[str, ArrayLike]
@@ -34,8 +35,8 @@ class WorldModelSchema:
         proprio_obs_hist: ArrayLike  # proprio history from t-H to t (..., H+1, o_p_dim)
         extero_obs: ArrayLike  # last extero obs (..., o_e_dim)
         acts_hist: ArrayLike  # action history from t-H to t-1 (..., H, act_dim)
-        fut_acts: ArrayLike  # future actions to apply from t to T-1 (..., T, act_dim)
-        fut_cmds: ArrayLike  # future commands from t to T (..., T+1, cmd_dim)
+        fut_acts: ArrayLike  # future actions to apply from t to t+T-1 (..., T, act_dim)
+        fut_cmds: ArrayLike  # future commands from t to t+T (..., T+1, cmd_dim)
 
     class Outputs(TypedDict):
         latents: ArrayLike  # future latents from t+1 to t+T (..., T, lat_dim)
@@ -61,4 +62,7 @@ class WorldModelSchema:
         "acts_hist": "actions",
         "fut_acts": "actions",
         "fut_cmds": "commands",
+        "proprio_obs": "proprio_obs",
+        "extero_obs": "extero_obs",
+        "actions": "actions",
     }

@@ -6,7 +6,7 @@ import h5py
 import numpy as np
 
 from simdist.modeling import types
-from simdist.utils import paths
+from simdist.utils import paths, config
 from simdist.data import DATA_KEY
 
 
@@ -86,13 +86,13 @@ class WorldModelDatasetBase(DatasetBase):
         extero_obs: np.ndarray = self._data["extero_obs"][t]
         acts_hist: np.ndarray = self._data["actions"][t_H:t]
         fut_acts: np.ndarray = self._data["actions"][t:t_T]
-        fut_cmd: np.ndarray = self._data["commands"][t:t_T]
+        fut_cmds: np.ndarray = self._data["commands"][t:t_T]
         model_inputs: types.WorldModelSchema.Inputs = {
             "proprio_obs_hist": proprio_obs_hist,
             "extero_obs": extero_obs,
             "acts_hist": acts_hist,
             "fut_acts": fut_acts,
-            "fut_cmd": fut_cmd,
+            "fut_cmds": fut_cmds,
         }
 
         # labels
@@ -136,6 +136,41 @@ class WorldModelDatasetBase(DatasetBase):
     def _load_data(self) -> None:
         for key, file in self._files.items():
             self._data[key] = file[DATA_KEY]
+
+    @staticmethod
+    def get_dummy_item(cfg: dict) -> DatasetItem:
+        sys_cfg = cfg["system"]
+        proprio_obs_dim = config.proprio_obs_dim_from_sys_config(sys_cfg)
+        extero_obs_dim = config.extero_obs_dim_from_sys_config(sys_cfg)
+        act_dim = config.action_dim_from_sys_config(sys_cfg)
+        cmd_dim = config.cmd_dim_from_sys_config(sys_cfg)
+        H = cfg["model"]["dataset"]["history_length"]
+        T = cfg["model"]["dataset"]["prediction_length"]
+
+        rng = np.random.default_rng()
+
+        inputs: types.WorldModelSchema.Inputs = {
+            "proprio_obs_hist": rng.standard_normal((H + 1, proprio_obs_dim)),
+            "extero_obs": rng.standard_normal((extero_obs_dim,)),
+            "acts_hist": rng.standard_normal((H, act_dim)),
+            "fut_acts": rng.standard_normal((T, act_dim)),
+            "fut_cmds": rng.standard_normal((T + 1, cmd_dim)),
+        }
+
+        labels: types.WorldModelSchema.Labels = {
+            "proprio_obs": rng.standard_normal((T, proprio_obs_dim)),
+            "extero_obs": rng.standard_normal((T, extero_obs_dim)),
+            "rewards": rng.standard_normal((T,)),
+            "values": rng.standard_normal((T,)),
+            "actions": rng.standard_normal((T, act_dim)),
+            "exp_pol_flags": np.ones((T,)),
+        }
+
+        return {
+            "model_in": inputs,
+            "labels": labels,
+            "metadata": {"dummy": True},
+        }
 
 
 class QuadrupedWorldModelDataset(WorldModelDatasetBase):

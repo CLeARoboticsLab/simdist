@@ -1,0 +1,11 @@
+defaults:
+  - system: go2
+  - model: quadruped_world_model
+  # - loss: quadruped_world_model
+  - _self_
+
+data:
+  dataset_name:
+  num_train_workers: 8
+  num_test_workers: 4
+  prefetch_factor: 2

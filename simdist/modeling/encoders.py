@@ -86,7 +86,9 @@ class QuadrupedEncoder(WorldModelEncoderBase):
 
         # encode latent
         last_proprio_obs = x["proprio_obs_hist"][:, -1]
-        latent = self.encode_latent(last_proprio_obs, x["extero_obs"])
+        latent = self.encode_latent(
+            last_proprio_obs, x["extero_obs"], deterministic=deterministic
+        )
 
         # temporal encoding
         proprio_obs_hist += self.temporal_enc[:-1]

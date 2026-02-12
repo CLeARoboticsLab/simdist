@@ -19,7 +19,7 @@ def register_model(name: str):
 def get_model(
     cfg: dict, scaler_params: types.ScalerParams, rngs: nnx.Rngs
 ) -> "ModelBase":
-    model_name = cfg["model"]["name"]
+    model_name = cfg["model"]["type"]
     if model_name not in _MODEL_REGISTRY:
         raise ValueError(
             f"Model '{model_name}' not found. Registered: {list(_MODEL_REGISTRY.keys())}"
@@ -80,7 +80,7 @@ class WorldModelBase(ModelBase):
         )
         self.fut_cmds_embed = modules.Embedding(
             seq_len=T,
-            input_dim=self.action_dim,
+            input_dim=self.cmd_dim,
             hidden_dims=[emb_hidden_size] * emb_cfg["future_cmds_layers"],
             embed_dim=self.latent_dim,
             rngs=rngs,
@@ -183,7 +183,7 @@ class WorldModelBase(ModelBase):
     ) -> types.WorldModelSchema.Outputs:
 
         # pre-processing, encoding, and embedding
-        x = self.scaler(x)
+        x = self.scaler.scale(x)
         encoding = self.encoder(x, deterministic=deterministic)
         fut_acts_emb = self.fut_acts_embed(x["fut_acts"], deterministic=deterministic)
         fut_cmds_emb = self.fut_cmds_embed(
@@ -199,7 +199,9 @@ class WorldModelBase(ModelBase):
 
         # reward head
         # concatenate last latent with latent prediction
-        z_t_tm1 = jnp.concatenate((encoding["latent"], latents[:, :-1]), axis=1)
+        z_t_tm1 = jnp.concatenate(
+            (encoding["latent"][:, None, :], latents[:, :-1]), axis=1
+        )
         # concatenate future actions and commands to latents
         rew_in = jnp.concatenate(
             (z_t_tm1, x["fut_acts"], x["fut_cmds"][:, :-1]), axis=-1
@@ -232,6 +234,12 @@ class WorldModelBase(ModelBase):
             "actions": actions,
         }
 
+    def inference(
+        self,
+        x: types.WorldModelSchema.Inputs,
+    ) -> types.WorldModelSchema.Outputs:
+        return self(x, deterministic=True)
+
     def encode_latent(
         self,
         proprio_obs: jnp.ndarray,
@@ -248,4 +256,4 @@ class WorldModelBase(ModelBase):
 class QuadrupedWorldModel(WorldModelBase):
     def __init__(self, cfg: dict, scaler_params: types.ScalerParams, rngs: nnx.Rngs):
         super().__init__(cfg, scaler_params, rngs)
-        self.encoder = encoders.QuadrupedEncoder(cfg, scaler_params, rngs)
+        self.encoder = encoders.QuadrupedEncoder(cfg, rngs)
