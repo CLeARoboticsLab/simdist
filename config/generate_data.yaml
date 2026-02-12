@@ -6,7 +6,7 @@ envs: 4096
 steps: 25000
 seed: 42
 
-expert: 15 #4999  # The iteration number of the expert policy
+expert: 4999  # The iteration number of the expert policy
 expert_prob: 0.5  # Probability of using the expert policy
 
 # The iteration numbers of the non-expert policies
