@@ -247,10 +247,16 @@ class WorldModelBase(ModelBase):
         extero_obs: jnp.ndarray,
         deterministic: bool | None = None,
     ) -> jnp.ndarray:
-        """For consistency loss"""
+        """For latent dynamics consistency loss"""
         return self.encoder.encode_latent(
             proprio_obs, extero_obs, deterministic=deterministic
         )
+
+    def get_scaler_params(self) -> types.ScalerParams:
+        """
+        Get the scaler parameters.
+        """
+        return self.scaler.get_scaler_params()
 
 
 @register_model("quadruped_world_model")

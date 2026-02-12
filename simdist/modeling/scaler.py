@@ -14,7 +14,9 @@ class Scaler(nnx.Module):
         scaler_params_mapping: types.ScalerParamsMapping,
         subset_mapping: dict[str, jnp.ndarray] | None = None,
     ):
-        self.scaler_params = jax.tree.map(nnx.Variable, scaler_params)
+        self.scaler_params: dict[str, nnx.Variable] = jax.tree.map(
+            nnx.Variable, scaler_params
+        )
         self.scaler_params_mapping = scaler_params_mapping
         self.subset_mapping = subset_mapping
         self.scale_fn = lambda value, mean, std: (value - mean) / (std + 1e-8)
@@ -42,6 +44,12 @@ class Scaler(nnx.Module):
         Unscale the input using the scaler parameters.
         """
         return self._transform(x, self.unscale_fn)
+
+    def get_scaler_params(self) -> types.ScalerParams:
+        """
+        Get the scaler parameters.
+        """
+        return jax.tree.map(lambda x: x.value, self.scaler_params)
 
     def _transform(
         self, x: Union[types.ModelInputs, types.ModelOutputs], func: Callable
