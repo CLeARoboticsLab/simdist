@@ -10,6 +10,27 @@ from simdist.utils import paths, config
 from simdist.data import DATA_KEY
 
 
+_DATASET_REGISTRY: dict[str, "DatasetBase"] = {}
+
+
+def register_dataset(name: str):
+    def decorator(cls):
+        _DATASET_REGISTRY[name] = cls
+        return cls
+
+    return decorator
+
+
+def get_dataset(cfg: dict) -> "DatasetBase":
+    dataset_name = cfg["model"]["dataset"]["type"]
+    if dataset_name not in _DATASET_REGISTRY:
+        raise ValueError(
+            f"Dataset '{dataset_name}' not found. "
+            f"Registered: {list(_DATASET_REGISTRY.keys())}"
+        )
+    return _DATASET_REGISTRY[dataset_name](cfg)
+
+
 class DatasetItem(TypedDict):
     model_in: types.ModelInputs
     labels: types.TrainingLabels
@@ -25,6 +46,7 @@ class DatasetBase(Dataset):
     def __init__(self, cfg: dict):
         self.cfg = cfg
         self._eval_mode = False
+        self._data_dir = ""
 
     def eval(self) -> None:
         self._eval_mode = True
@@ -38,7 +60,12 @@ class DatasetBase(Dataset):
     def __getitem__(self, idx: int) -> DatasetItem:
         raise NotImplementedError("This method must be implemented.")
 
+    @property
+    def data_dir(self) -> str:
+        return self._data_dir
 
+
+@register_dataset("world_model")
 class WorldModelDatasetBase(DatasetBase):
     def __init__(self, cfg: dict):
         super().__init__(cfg)
@@ -52,13 +79,15 @@ class WorldModelDatasetBase(DatasetBase):
         self._data: dict[str, h5py.Dataset] = {}
 
         # Load data
-        data_dir = paths.get_data_dir(dataset_name, sys_name, self.H, self.T)
-        if not os.path.exists(data_dir):
+        self._data_dir = paths.get_processed_data_dir(
+            dataset_name, sys_name, self.H, self.T
+        )
+        if not os.path.exists(self._data_dir):
             raise FileNotFoundError(
-                f"Dataset directory '{data_dir}' does not exist."
+                f"Dataset directory '{self._data_dir}' does not exist."
                 "Did you remember to run scripts/process_data.py?"
             )
-        self._load_files(data_dir)
+        self._load_files(self._data_dir)
         self._load_data()
 
     def __len__(self) -> int:
@@ -173,6 +202,7 @@ class WorldModelDatasetBase(DatasetBase):
         }
 
 
+@register_dataset("quadruped_world_model")
 class QuadrupedWorldModelDataset(WorldModelDatasetBase):
     def __init__(self, cfg: dict):
         super().__init__(cfg)

@@ -4,8 +4,35 @@ defaults:
   # - loss: quadruped_world_model
   - _self_
 
+run_name:
+
 data:
   dataset_name:
   num_train_workers: 8
   num_test_workers: 4
   prefetch_factor: 2
+
+training:
+  num_epochs: 2
+  max_steps:  # will train until num_epochs, or max_steps (if given), whichever is first
+  eval_interval: 10000  # evaluates and checkpoints at this interval
+  learning_rate: 0.0002
+  warmup_steps: 1000
+  decay_steps: 400000
+  end_learning_rate: 0.0001
+  batch_size: 64
+  training_data_ratio: 0.995
+  seed: 42
+
+checkpoint:
+  # create a checkpoint in this directory with the given run name, if resume_checkpoint is not set
+  enabled: True
+  # keeps this many most recent checkpoints; leave blank to keep all
+  max_to_keep: 3
+  # if non-empty, resume from this checkpoint
+  resume_checkpoint:
+
+wandb:
+  log: False
+  project: simdist_train_model
+  entity:

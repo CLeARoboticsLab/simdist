@@ -1,7 +1,7 @@
 type: quadruped_world_model
 
 dataset:
-  type: world_model
+  type: quadruped_world_model
   history_length: 25
   prediction_length: 25
   augmentations:

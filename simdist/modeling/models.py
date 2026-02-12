@@ -22,7 +22,8 @@ def get_model(
     model_name = cfg["model"]["type"]
     if model_name not in _MODEL_REGISTRY:
         raise ValueError(
-            f"Model '{model_name}' not found. Registered: {list(_MODEL_REGISTRY.keys())}"
+            f"Model '{model_name}' not found. "
+            f"Registered: {list(_MODEL_REGISTRY.keys())}"
         )
     return _MODEL_REGISTRY[model_name](cfg, scaler_params, rngs)
 

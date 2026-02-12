@@ -11,6 +11,7 @@ _PATHS = {
     "ALL_DATASETS": os.path.join(SIMDIST_ROOT_PATH, "datasets"),
     "SIM_DATASETS": os.path.join(SIMDIST_ROOT_PATH, "datasets", "sim"),
     "REAL_DATASETS": os.path.join(SIMDIST_ROOT_PATH, "datasets", "real"),
+    "MODEL_CHECKPOINTS": os.path.join(SIMDIST_ROOT_PATH, "checkpoints", "models"),
 }
 _FILENAMES = {
     "RAW_DATA_FILE_NAME": "raw_data.hdf5",
@@ -24,6 +25,7 @@ _FILENAMES = {
     "VALUES_FILE_NAME": "values.hdf5",
     "EXPERT_POLICY_FLAG_FILE_NAME": "expert_policy_flag.hdf5",
     "SCALER_PARAMS_FILE_NAME": "scaler_params.json",
+    "MODEL_CONFIG_FILE_NAME": "model_config.yaml",
 }
 
 
@@ -182,3 +184,13 @@ def get_expert_policy_flags_path(processed_data_dir: str):
 def get_scaler_params_filename():
     """Get the filename for the scaler parameters file."""
     return _FILENAMES["SCALER_PARAMS_FILE_NAME"]
+
+
+def get_model_config_filename():
+    """Get the filename for the model config file."""
+    return _FILENAMES["MODEL_CONFIG_FILE_NAME"]
+
+
+def get_model_checkpoints_dir():
+    """Get the directory for model checkpoints."""
+    return _PATHS["MODEL_CHECKPOINTS"]
