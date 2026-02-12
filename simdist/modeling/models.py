@@ -230,7 +230,9 @@ class WorldModelBase(ModelBase):
         self,
         x: types.WorldModelSchema.Inputs,
     ) -> types.WorldModelSchema.Outputs:
-        return self(x, deterministic=True)
+        y = self(x, deterministic=True)
+        y = self.scaler.unscale(y)
+        return y
 
     def encode_latent(
         self,
