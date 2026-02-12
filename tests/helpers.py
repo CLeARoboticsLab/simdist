@@ -1,9 +1,11 @@
 """Shared helper functions for tests."""
 
 import jax.numpy as jnp
+from flax import nnx
 
-from simdist.modeling import types
-from simdist.utils import config
+from simdist.modeling import types, models
+from simdist.utils import config, model as model_utils
+from simdist.data.dataset import WorldModelDatasetBase
 
 
 def make_dummy_scaler_params(cfg: dict) -> types.ScalerParams:
@@ -27,3 +29,20 @@ def make_dummy_scaler_params(cfg: dict) -> types.ScalerParams:
         "rewards": {"mean": jnp.zeros(1), "std": jnp.ones(1)},
         "values": {"mean": jnp.zeros(1), "std": jnp.ones(1)},
     }
+
+
+def make_dummy_model(cfg: dict) -> models.ModelBase:
+    scaler_params = make_dummy_scaler_params(cfg)
+    model = models.get_model(cfg, scaler_params, nnx.Rngs(0))
+    return model
+
+
+def make_dummy_world_model_input(
+    cfg: dict, batch_size: int
+) -> types.WorldModelSchema.Inputs:
+    item = WorldModelDatasetBase.get_dummy_item(cfg)
+    item.pop("metadata")
+    item = model_utils.dataset_batch_to_jax(item)
+    item = model_utils.repeat_along_batch_dim(item, batch_size)
+    model_in = item["model_in"]
+    return model_in

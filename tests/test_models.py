@@ -9,12 +9,8 @@ from simdist.utils.jax import configure_jax_compilation_cache
 configure_jax_compilation_cache()
 
 import jax
-from flax import nnx
 
-from simdist.data.dataset import WorldModelDatasetBase
-from simdist.utils import model as model_utils
-from simdist.modeling import models
-from helpers import make_dummy_scaler_params
+import helpers
 
 REL_CONFIG_PATH = "../config"
 
@@ -43,16 +39,11 @@ def test_world_models(cfg: dict):
     num_inferences = 100
 
     # create model
-    scaler_params = make_dummy_scaler_params(cfg)
-    model = models.get_model(cfg, scaler_params, nnx.Rngs(0))
+    model = helpers.make_dummy_model(cfg)
     model_inf_fn = jax.jit(model.inference)
 
     # create dummy model input
-    item = WorldModelDatasetBase.get_dummy_item(cfg)
-    item.pop("metadata")
-    item = model_utils.dataset_batch_to_jax(item)
-    item = model_utils.repeat_along_batch_dim(item, B)
-    model_in = item["model_in"]
+    model_in = helpers.make_dummy_world_model_input(cfg, B)
 
     # run inference
     _ = model_inf_fn(model_in)  # warm up
