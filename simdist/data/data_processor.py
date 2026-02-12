@@ -64,6 +64,7 @@ class DataProcessor:
             paths.get_start_idxs_path(processed_data_dir),
             DATA_KEY,
             0,
+            dtype=np.int64,
         )
         proprio_obs_h5 = _H5Appender(
             paths.get_proprio_obs_path(processed_data_dir),
@@ -99,6 +100,7 @@ class DataProcessor:
             paths.get_expert_policy_flags_path(processed_data_dir),
             DATA_KEY,
             0,
+            dtype=np.bool_,
         )
 
         all_ep_lens = []
