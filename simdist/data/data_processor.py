@@ -265,23 +265,30 @@ class _H5Appender:
 
 
 class _RunningStats:
-    def __init__(self, dim: int = 0):
+    def __init__(self, dim: int = 1):
+        # Ensure dim is at least 1 so sum is an array, not a scalar
+        actual_dim = max(1, dim)
         self.n = 0
-        self.sum = np.zeros(dim) if dim > 0 else 0.0
-        self.sum_sq = np.zeros(dim) if dim > 0 else 0.0
+        self.sum = np.zeros(actual_dim)
+        self.sum_sq = np.zeros(actual_dim)
 
     def update(self, data: np.ndarray):
         # data shape: (T, dim) or (T,)
+        # Force data to be 2D so axis=0 always leaves a 1D array result
+        if data.ndim == 1:
+            data = data[:, np.newaxis]
+
         self.n += data.shape[0]
         self.sum += np.sum(data, axis=0)
         self.sum_sq += np.sum(np.square(data), axis=0)
 
     def finalize(self) -> types.Stats:
         mean = self.sum / self.n
-        # Variance = E[X^2] - (E[X])^2
         var = (self.sum_sq / self.n) - np.square(mean)
-        # Use clip to avoid tiny negatives from float precision
         std = np.sqrt(np.maximum(var, 1e-8))
+
+        # Ensure we return a list, even if it's just one element
+        # .tolist() on a 1D array [x] returns [x]
         return {"mean": mean.tolist(), "std": std.tolist()}
 
 
