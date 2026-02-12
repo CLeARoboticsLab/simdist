@@ -63,8 +63,8 @@ class WorldModelDatasetBase(DatasetBase):
 
         dataset_name = cfg["data"]["dataset_name"]
         sys_name = cfg["system"]["name"]
-        self.H = cfg["model"]["dataset"]["history_length"]
-        self.T = cfg["model"]["dataset"]["prediction_length"]
+        self.H = config.history_length_from_config(cfg)
+        self.T = config.prediction_length_from_config(cfg)
 
         self._files: dict[str, h5py.File] = {}
         self._data: dict[str, h5py.Dataset] = {}

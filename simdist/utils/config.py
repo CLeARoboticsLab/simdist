@@ -105,3 +105,11 @@ def cmd_dim_from_sys_config(sys_cfg: dict) -> int:
         int: The command dimension.
     """
     return sys_cfg["cmd"]["dim"]
+
+
+def history_length_from_config(cfg: dict) -> int:
+    return cfg["model"]["dataset"]["history_length"]
+
+
+def prediction_length_from_config(cfg: dict) -> int:
+    return cfg["model"]["dataset"]["prediction_length"]
