@@ -1,5 +1,7 @@
 import os
 import json
+import jax
+import jax.numpy as jnp
 
 from simdist.utils import paths
 from simdist.modeling import types
@@ -19,7 +21,7 @@ def save_scaler_params(scaler_params: types.ScalerParams, save_dir: str):
         json.dump(scaler_params, f, indent=4)
 
 
-def load_scaler_params(load_dir: str) -> types.ScalerParams:
+def load_scaler_params(load_dir: str, as_jax_array: bool = True) -> types.ScalerParams:
     """
     Load scaler parameters from a JSON file in the specified dataset directory.
 
@@ -32,4 +34,8 @@ def load_scaler_params(load_dir: str) -> types.ScalerParams:
     scaler_params_path = os.path.join(load_dir, paths.get_scaler_params_filename())
     with open(scaler_params_path, "r") as f:
         scaler_params = json.load(f)
+    if as_jax_array:
+        scaler_params = jax.tree.map(
+            lambda x: jnp.array(x), scaler_params, is_leaf=lambda x: isinstance(x, list)
+        )
     return scaler_params

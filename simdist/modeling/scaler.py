@@ -1,4 +1,4 @@
-from typing import Union, Callable
+from typing import Callable
 
 import flax.nnx as nnx
 import jax
@@ -22,24 +22,18 @@ class Scaler(nnx.Module):
         self.scale_fn = lambda value, mean, std: (value - mean) / (std + 1e-8)
         self.unscale_fn = lambda value, mean, std: value * std + mean
 
-    def __call__(
-        self, x: Union[types.ModelInputs, types.ModelOutputs]
-    ) -> Union[types.ModelInputs, types.ModelOutputs]:
+    def __call__(self, x: types.ModelData) -> types.ModelData:
         raise NotImplementedError(
             "Scaler should not be called directly. Use scale() or unscale() methods."
         )
 
-    def scale(
-        self, x: Union[types.ModelInputs, types.ModelOutputs]
-    ) -> Union[types.ModelInputs, types.ModelOutputs]:
+    def scale(self, x: types.ModelData) -> types.ModelData:
         """
         Scale the input using the scaler parameters.
         """
         return self._transform(x, self.scale_fn)
 
-    def unscale(
-        self, x: Union[types.ModelInputs, types.ModelOutputs]
-    ) -> Union[types.ModelInputs, types.ModelOutputs]:
+    def unscale(self, x: types.ModelData) -> types.ModelData:
         """
         Unscale the input using the scaler parameters.
         """
@@ -51,9 +45,7 @@ class Scaler(nnx.Module):
         """
         return jax.tree.map(lambda x: x.value, self.scaler_params)
 
-    def _transform(
-        self, x: Union[types.ModelInputs, types.ModelOutputs], func: Callable
-    ) -> Union[types.ModelInputs, types.ModelOutputs]:
+    def _transform(self, x: types.ModelData, func: Callable) -> types.ModelData:
         transformed_x = {}
         for key, value in x.items():
             if key in self.scaler_params_mapping:

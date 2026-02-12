@@ -26,6 +26,7 @@ class ScalerParams(TypedDict):
 ModelInputs = dict[str, ArrayLike]
 ModelOutputs = dict[str, ArrayLike]
 TrainingLabels = dict[str, ArrayLike]
+ModelData = ModelInputs | ModelOutputs | TrainingLabels
 
 ScalerParamsMapping = dict[str, str]
 
@@ -64,5 +65,7 @@ class WorldModelSchema:
         "fut_cmds": "commands",
         "proprio_obs": "proprio_obs",
         "extero_obs": "extero_obs",
+        "rewards": "rewards",
+        "values": "values",
         "actions": "actions",
     }

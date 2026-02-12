@@ -106,7 +106,7 @@ class WorldModelDatasetBase(DatasetBase):
         extero_obs: np.ndarray = self._data["extero_obs"][t]
         acts_hist: np.ndarray = self._data["actions"][t_H:t]
         fut_acts: np.ndarray = self._data["actions"][t:t_T]
-        fut_cmds: np.ndarray = self._data["commands"][t:t_T]
+        fut_cmds: np.ndarray = self._data["commands"][t : t_T + 1]
         model_inputs: types.WorldModelSchema.Inputs = {
             "proprio_obs_hist": proprio_obs_hist,
             "extero_obs": extero_obs,
@@ -232,8 +232,8 @@ class QuadrupedWorldModelDataset(WorldModelDatasetBase):
         )
 
         # Apply noise to height scan
-        item["model_in"]["extero_obs"]["height_scan"] = _apply_noise(
-            item["model_in"]["extero_obs"]["height_scan"], self.height_noise
+        item["model_in"]["extero_obs"] = _apply_noise(
+            item["model_in"]["extero_obs"], self.height_noise
         )
 
         return item

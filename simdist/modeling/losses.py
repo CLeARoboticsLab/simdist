@@ -48,7 +48,7 @@ class Loss:
             "Check the loss config file and add or remove weight terms as needed."
         )
         weighted_losses = {k: self.weights[k] * losses[k] for k in self.loss_terms}
-        loss = jnp.sum(weighted_losses.values())
+        loss = sum(weighted_losses.values())
         return loss, weighted_losses
 
     def compute_losses(
@@ -77,8 +77,9 @@ class WorldModelLoss(Loss):
         # Compute the predicted outputs
         y_pred = model(x, deterministic=deterministic)
 
-        # Get the scaler parameters to automatically scale losses
-        scaler_params = model.get_scaler_params()
+        # Scale the training labels to automatically scale the losses
+        scaler = model.get_scaler()
+        y = jax.lax.stop_gradient(scaler.scale(y))
 
         # Encode future obs for latent dynamics loss
         fut_latents = jax.lax.stop_gradient(
@@ -89,11 +90,9 @@ class WorldModelLoss(Loss):
         latent_dynamics_loss = jnp.mean(latents_error**2)
 
         reward_error = y_pred["rewards"] - y["rewards"]
-        reward_error /= scaler_params["rewards"]
         reward_loss = jnp.mean(reward_error**2)
 
         value_error = y_pred["values"] - y["values"]
-        value_error /= scaler_params["values"]
         value_loss = jnp.mean(value_error**2)
 
         # set loss to zero for all actions after the expert policy isn't used
@@ -101,7 +100,6 @@ class WorldModelLoss(Loss):
         act_loss_mask = act_loss_mask[:, :, None]
 
         action_error = y_pred["actions"] - y["actions"]
-        action_error /= scaler_params["actions"]
         action_loss = jnp.mean((action_error * act_loss_mask) ** 2)
 
         losses = {

@@ -64,6 +64,39 @@ def repeat_along_batch_dim(x: jnp.ndarray | dict[str, jnp.ndarray], B: int):
     return jax.tree.map(lambda y: jnp.tile(y[None, ...], (B,) + (1,) * y.ndim), x)
 
 
+def create_param_filter(param_names: list[str]):
+    filters = []
+    for path in param_names:
+        names = path.split("/")
+        f = []
+        for name in names:
+            if name.isdigit():
+                name = int(name)
+            f.append(nnx.PathContains(name))
+        f = tuple(f)
+        f = nnx.All(nnx.Param, nnx.All(*f))
+        filters.append(f)
+    return nnx.Any(*tuple(filters))
+
+
+def count_params(model: nnx.Module, filter=None):
+    full_state = nnx.state(model)
+    if filter is None:
+        sel_state = full_state
+    else:
+        sel_state = full_state.filter(filter)
+
+    def _leaf_numel(x: Any) -> int:
+        # Handle JAX/NumPy arrays and Python scalars uniformly.
+        try:
+            return int(np.size(x))
+        except Exception:
+            return 0
+
+    leaves = jax.tree_util.tree_leaves(sel_state)
+    return int(sum(_leaf_numel(x) for x in leaves))
+
+
 def _numpy_dict_to_jax(numpy_dict: dict[Any, np.ndarray]) -> dict[Any, jnp.ndarray]:
     """Convert a dict of numpy arrays to a dict of JAX arrays."""
     return jax.tree.map(lambda x: jnp.array(x), numpy_dict)

@@ -1,7 +1,8 @@
 defaults:
   - system: go2
   - model: quadruped_world_model
-  # - loss: quadruped_world_model
+  - loss: world_model
+  - heads: all
   - _self_
 
 run_name:
@@ -17,11 +18,11 @@ training:
   max_steps:  # will train until num_epochs, or max_steps (if given), whichever is first
   eval_interval: 10000  # evaluates and checkpoints at this interval
   learning_rate: 0.0002
-  warmup_steps: 1000
+  warmup_steps: 10000
   decay_steps: 400000
   end_learning_rate: 0.0001
-  batch_size: 64
-  training_data_ratio: 0.995
+  batch_size: 512
+  training_data_ratio: 0.998  # portion of dataset to use for training; the rest is used for evaluation
   seed: 42
 
 checkpoint:

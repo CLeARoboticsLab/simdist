@@ -243,11 +243,11 @@ class WorldModelBase(ModelBase):
             proprio_obs, extero_obs, deterministic=deterministic
         )
 
-    def get_scaler_params(self) -> types.ScalerParams:
+    def get_scaler(self) -> scaler.Scaler:
         """
-        Get the scaler parameters.
+        Return the scaler.
         """
-        return self.scaler.get_scaler_params()
+        return self.scaler
 
 
 @register_model("quadruped_world_model")
