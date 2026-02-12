@@ -19,7 +19,7 @@ def cfg(request):
     model_name = request.param
     with initialize(config_path=REL_CONFIG_PATH, version_base=None):
         cfg = compose(
-            config_name="train",
+            config_name="train_model",
             overrides=[f"model={model_name}"],
         )
         cfg = OmegaConf.to_container(cfg, resolve=True)
