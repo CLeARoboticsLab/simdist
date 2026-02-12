@@ -35,7 +35,7 @@ pip install -e .
 
 ## Expert Policy Training
 
-To train, use the below, replacing `<wandb_username>` with your Weights and Biases username (if you don't have an account, create one at [https://wandb.ai/](https://wandb.ai/)). Runs are saved to `~/simdist/checkpoints/rl/`. The environment config is found in `~/simdist/simdist/rl/go2.py` and the PPO config is found in `~~/simdist/simdist/rl/rsl_rl_ppo_cfg.py`.
+To train, use the below, replacing `<wandb_username>` with your Weights and Biases username (if you don't have an account, create one at [https://wandb.ai/](https://wandb.ai/)). Runs are saved to `~/simdist/checkpoints/rl/`. The environment config is found in [`simdist/rl/go2.py`](simdist/rl/go2.py) and the PPO config is found in [`simdist/rl/rsl_rl_ppo_cfg.py`](simdist/rl/rsl_rl_ppo_cfg.py).
 
 ```bash
 WANDB_USERNAME=<wandb_username> python scripts/train_rl.py --task Go2 --headless
@@ -55,13 +55,13 @@ python scripts/export_policies.py -r <run_folder_name>
 
 ## Data Generation
 
-Generate data with the below, replacing `<run_folder_name>` with the name of the folder from training that is found in `~/simdist/checkpoints/rl/` (for example: `2025-03-14_05-14-42`). This will save data to `~/simdist/datasets/sim/`. The configuration for data generation is found in `~/simdist/config/generate_data.yaml`.
+Generate data with the below, replacing `<run_folder_name>` with the name of the folder from training that is found in `~/simdist/checkpoints/rl/` (for example: `2025-03-14_05-14-42`). This will save data to `~/simdist/datasets/sim/`. The configuration for data generation is found in [`config/generate_data.yaml`](config/generate_data.yaml).
 
 ```bash
 python scripts/generate_data.py rl_run=<run_folder_name>
 ```
 
-Next, post-process the data with the below, replacing `<dataset_name>` with the name of the dataset in `~/simdist/datasets/sim/`. This script concatenates all of the episodes into single dataset files and computes parameters for input/output scaling. The configuration for data processing is found in `~/simdist/config/process_data.yaml`. The processed dataset is saved to `~/simdist/datasets/sim/<dataset_name>/processed_data_{system}_{pred_len}_{hist_len}`.
+Next, post-process the data with the below, replacing `<dataset_name>` with the name of the dataset in `~/simdist/datasets/sim/`. This script concatenates all of the episodes into single dataset files and computes parameters for input/output scaling. The configuration for data processing is found in [`config/process_data.yaml`](config/process_data.yaml). The processed dataset is saved to `~/simdist/datasets/sim/<dataset_name>/processed_data_{system}_{pred_len}_{hist_len}`.
 
 ```bash
 python scripts/process_data.py dataset_name=<dataset_name>
