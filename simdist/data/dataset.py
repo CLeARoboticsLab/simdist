@@ -32,10 +32,6 @@ class DatasetBase(Dataset):
     def train(self) -> None:
         self._eval_mode = False
 
-    @property
-    def _can_add_noise(self) -> bool:
-        return not self._eval_mode
-
     def __len__(self) -> int:
         raise NotImplementedError("This method must be implemented.")
 
@@ -70,9 +66,12 @@ class WorldModelDatasetBase(DatasetBase):
 
     def __getitem__(self, idx: int) -> DatasetItem:
         t_H = self._data["start_idxs"][idx]
-        return self._get_item_by_t_H(t_H)
+        item = self.get_item_by_t_H(t_H)
+        if not self._eval_mode:
+            item = self.data_augmentations(item)
+        return item
 
-    def _get_item_by_t_H(self, t_H: int) -> DatasetItem:
+    def get_item_by_t_H(self, t_H: int) -> DatasetItem:
         # metadata to be passed to subclasses
         t = t_H + self.H
         t_T = t + self.T
@@ -119,6 +118,9 @@ class WorldModelDatasetBase(DatasetBase):
         }
         return item
 
+    def data_augmentations(self, item: DatasetItem) -> DatasetItem:
+        return item
+
     def _load_files(self, data_dir: str) -> None:
         self._files["start_idxs"] = h5py.File(paths.get_start_idxs_path(data_dir))
         self._files["proprio_obs"] = h5py.File(paths.get_proprio_obs_path(data_dir))
@@ -134,3 +136,53 @@ class WorldModelDatasetBase(DatasetBase):
     def _load_data(self) -> None:
         for key, file in self._files.items():
             self._data[key] = file[DATA_KEY]
+
+
+class QuadrupedWorldModelDataset(WorldModelDatasetBase):
+    def __init__(self, cfg: dict):
+        super().__init__(cfg)
+        sys_cfg = self.cfg["system"]
+        aug_cfg = self.cfg["model"]["dataset"]["augmentations"]
+        self.add_noise = aug_cfg["add_noise"]
+
+        if not self.add_noise:
+            return
+
+        # Determine noise to add to proprioceptive observations
+        proprio_ob_dims = [ob["dim"] for ob in sys_cfg["proprio_obs"]["types"]]
+        self.proprio_obs_dim = sum(proprio_ob_dims)
+        proprio_obs_noises = [ob["noise"] for ob in sys_cfg["proprio_obs"]["types"]]
+        self.proprio_obs_noise_stds = []
+        for dim, noise in zip(proprio_ob_dims, proprio_obs_noises):
+            self.proprio_obs_noise_stds.extend([noise] * dim)
+        self.proprio_obs_noise_stds = np.array(self.proprio_obs_noise_stds)
+
+        # Determine noise to add to the height_scan
+        self.height_noise = None
+        for ob in sys_cfg["extero_obs"]["types"]:
+            if ob["name"] == "height_scan":
+                self.height_noise = ob["noise"]
+                break
+        if self.height_noise is None:
+            raise ValueError("Height scan noise not found")
+
+    def data_augmentations(self, item: DatasetItem) -> DatasetItem:
+        if not self.add_noise:
+            return item
+
+        # Apply noise to proprioceptive observations
+        item["model_in"]["proprio_obs_hist"] = _apply_noise(
+            item["model_in"]["proprio_obs_hist"], self.proprio_obs_noise_stds
+        )
+
+        # Apply noise to height scan
+        item["model_in"]["extero_obs"]["height_scan"] = _apply_noise(
+            item["model_in"]["extero_obs"]["height_scan"], self.height_noise
+        )
+
+        return item
+
+
+def _apply_noise(arr: np.ndarray, std: float | np.ndarray) -> np.ndarray:
+    noise = np.random.randn(*arr.shape)
+    return arr + noise * std

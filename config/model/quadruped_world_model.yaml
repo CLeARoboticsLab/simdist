@@ -4,6 +4,8 @@ dataset:
   type: world_model
   history_length: 25
   prediction_length: 25
+  augmentations:
+    add_noise: true
 
 dropout:
   mlp: 0.2
