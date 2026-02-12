@@ -2,30 +2,21 @@ import flax.nnx as nnx
 import jax.numpy as jnp
 
 from simdist.modeling import types, scaler, encoders, modules
-from simdist.utils import config
+from simdist.utils import config, registry
 
 
-_MODEL_REGISTRY: dict[str, "ModelBase"] = {}
+_MODEL_REGISTRY: registry.Registry["ModelBase"] = registry.Registry("Model")
 
 
 def register_model(name: str):
-    def decorator(cls):
-        _MODEL_REGISTRY[name] = cls
-        return cls
-
-    return decorator
+    return _MODEL_REGISTRY.register(name)
 
 
 def get_model(
     cfg: dict, scaler_params: types.ScalerParams, rngs: nnx.Rngs
 ) -> "ModelBase":
     model_name = cfg["model"]["type"]
-    if model_name not in _MODEL_REGISTRY:
-        raise ValueError(
-            f"Model '{model_name}' not found. "
-            f"Registered: {list(_MODEL_REGISTRY.keys())}"
-        )
-    return _MODEL_REGISTRY[model_name](cfg, scaler_params, rngs)
+    return _MODEL_REGISTRY.create(model_name, cfg, scaler_params, rngs)
 
 
 class ModelBase(nnx.Module):

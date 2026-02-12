@@ -6,29 +6,20 @@ import h5py
 import numpy as np
 
 from simdist.modeling import types
-from simdist.utils import paths, config
+from simdist.utils import paths, config, registry
 from simdist.data import DATA_KEY
 
 
-_DATASET_REGISTRY: dict[str, "DatasetBase"] = {}
+_DATASET_REGISTRY: registry.Registry["DatasetBase"] = registry.Registry("Dataset")
 
 
 def register_dataset(name: str):
-    def decorator(cls):
-        _DATASET_REGISTRY[name] = cls
-        return cls
-
-    return decorator
+    return _DATASET_REGISTRY.register(name)
 
 
 def get_dataset(cfg: dict) -> "DatasetBase":
     dataset_name = cfg["model"]["dataset"]["type"]
-    if dataset_name not in _DATASET_REGISTRY:
-        raise ValueError(
-            f"Dataset '{dataset_name}' not found. "
-            f"Registered: {list(_DATASET_REGISTRY.keys())}"
-        )
-    return _DATASET_REGISTRY[dataset_name](cfg)
+    return _DATASET_REGISTRY.create(dataset_name, cfg)
 
 
 class DatasetItem(TypedDict):

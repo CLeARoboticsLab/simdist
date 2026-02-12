@@ -5,29 +5,21 @@ import jax.numpy as jnp
 import jax
 
 from simdist.modeling import types, models
+from simdist.utils import registry
 
 
 Losses = dict[str, jnp.ndarray]
 ExtraInfo = dict[str, Any]
-_LOSS_REGISTRY: dict[str, "Loss"] = {}
+_LOSS_REGISTRY: registry.Registry["Loss"] = registry.Registry("Loss")
 
 
 def register_loss(name: str):
-    def decorator(cls):
-        _LOSS_REGISTRY[name] = cls
-        return cls
-
-    return decorator
+    return _LOSS_REGISTRY.register(name)
 
 
 def get_loss(cfg: dict) -> "Loss":
     loss_name = cfg["loss"]["type"]
-    if loss_name not in _LOSS_REGISTRY:
-        raise ValueError(
-            f"Loss '{loss_name}' not found. "
-            f"Registered: {list(_LOSS_REGISTRY.keys())}"
-        )
-    return _LOSS_REGISTRY[loss_name](cfg)
+    return _LOSS_REGISTRY.create(loss_name, cfg)
 
 
 class Loss:
