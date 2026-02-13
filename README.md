@@ -69,8 +69,16 @@ python scripts/process_data.py dataset_name=<dataset_name>
 
 ## World Model Pretraining
 
-Pretrain the world model with the below, replacing `<dataset_name>` with the name of the dataset in `~/simdist/datasets/sim/`. Checkpoints will be saved in `~/simdist/checkpoints/rl/`; use `<run_name>` to specify the name of the checkpoints (optional). Optionally, launch with `wandb.log=true` and `wandb.entity=<your_wandb_entity_or_username>` to enable Weights and Biases logging. Additional configuration is found in [`config/train_model.yaml`](config/train_model.yaml).
+Pretrain the world model with the below, replacing `<dataset_name>` with the name of the dataset in `~/simdist/datasets/sim/`. Checkpoints will be saved in `~/simdist/checkpoints/models/`; use `<run_name>` to specify the name of the checkpoints (optional). Optionally, launch with `wandb.log=true` and `wandb.entity=<your_wandb_entity_or_username>` to enable Weights and Biases logging. Additional configuration is found in [`config/train_model.yaml`](config/train_model.yaml).
 
 ```bash
 python scripts/train_model.py data.dataset_name=<dataset_name> run_name=<run_name>
+```
+
+## Deployment (Simulation)
+
+Deploy, in simulation, the pretrained world model using sampling-based planning with the below, replacing `<checkpoint_name>` with the name of the checkpoint in `~/simdist/checkpoints/models/`. Use `--headless` to run without a GUI. Additional configuration is found in [`config/simulate_go2.yaml`](config/simulate_go2.yaml).
+
+```bash
+python scripts/simulate_go2.py model.checkpoint=<checkpoint_name>
 ```

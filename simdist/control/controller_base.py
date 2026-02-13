@@ -16,7 +16,7 @@ class ControllerInput(TypedDict):
 
 
 class ControllerOutput(TypedDict):
-    actions: jnp.ndarray
+    actions: np.ndarray
 
 
 class ControllerBase:

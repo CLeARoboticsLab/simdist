@@ -1,0 +1,29 @@
+defaults:
+  - control: mppi
+
+model:
+  checkpoint: "go2_2026-02-12"
+  step:  # leave blank for latest
+
+task:
+  forward_vel: 0.5
+  # gains for walking straight
+  kx: 1.0
+  ky: 1.0
+  k_heading: 1.0
+
+sim:
+  kill_on_reset: false  # stop simulation on the first termination
+  reset_steps: 25  # number of steps after a reset to apply no actions to stabilize the robot
+  total_steps: 1000  # number of steps to run the simulation
+  seed: 42
+  terrain: boxes  # plane, boxes, random_rough, pyramid_stairs, pyramid_stairs_inv, hf_pyramid_slope, hf_pyramid_slope_inv
+  terrain_difficulty: 0.4  # 0.0 to 1.0
+  friction: 0.8
+  restitution: 0.05
+  add_mass: 0.0
+
+wandb:
+  log: false
+  run_name:
+  entity:

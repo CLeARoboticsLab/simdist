@@ -97,6 +97,10 @@ def get_train_model_hydra_config():
     return {"config_path": get_config_dir(), "config_name": "train_model"}
 
 
+def get_simulate_go2_hydra_config():
+    return {"config_path": get_config_dir(), "config_name": "simulate_go2"}
+
+
 def get_sim_dataset_dir(dataset_name: str):
     """Get the directory for a specific simulation dataset."""
     return os.path.join(_PATHS["SIM_DATASETS"], dataset_name)
