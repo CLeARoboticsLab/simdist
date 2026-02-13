@@ -1,0 +1,12 @@
+num_samples: 450
+iterations: 8 # number of MPPI iterations before taking a step
+delay: 1  # the number of anticipated steps the controller takes to run
+mixture_coef: 0.05
+min_std: 0.05
+bc_act_std: 0.05
+init_std: 2.0
+num_elites: 64
+temperature: 0.25
+momentum: 0.0
+discount: 0.99
+seed: 42

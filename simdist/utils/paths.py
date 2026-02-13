@@ -55,11 +55,13 @@ def get_highest_numbered_file(folder_path, prefix, suffix):
 
     Args:
         folder_path (str): Path to the folder containing the files.
-        prefix (str): The prefix of the file names (e.g., "critic" or another identifier).
+        prefix (str): The prefix of the file names (e.g., "critic" or another
+        identifier).
         suffix (str): The suffix of the file names (e.g., ".pt", ".onnx").
 
     Returns:
-        str or None: The filename with the highest number, or None if no matching files are found.
+        str or None: The filename with the highest number, or None if no matching files
+        are found.
     """
     pattern = re.compile(rf"{re.escape(prefix)}_(\d+){re.escape(suffix)}")
 
@@ -194,3 +196,7 @@ def get_model_config_filename():
 def get_model_checkpoints_dir():
     """Get the directory for model checkpoints."""
     return _PATHS["MODEL_CHECKPOINTS"]
+
+
+def get_control_config_dir():
+    return os.path.join(_PATHS["CONFIG"], "control")
