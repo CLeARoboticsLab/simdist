@@ -1,5 +1,6 @@
 defaults:
   - control: mppi
+  - _self_
 
 model:
   checkpoint: "go2_2026-02-12"
