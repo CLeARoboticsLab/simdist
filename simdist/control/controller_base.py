@@ -10,10 +10,9 @@ from simdist.utils import config, buffer
 
 
 class ControllerInput(TypedDict):
-    proprio_obs: np.ndarray
-    extero_obs: np.ndarray
-    command: np.ndarray
-    prev_action: np.ndarray
+    proprio_obs: np.ndarray  # (proprio_obs_dim,)
+    extero_obs: np.ndarray  # (extero_obs_dim,)
+    prev_action: np.ndarray  # (action_dim,)
 
 
 class ControllerOutput(TypedDict):

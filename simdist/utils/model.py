@@ -1,4 +1,4 @@
-from typing import Any, Tuple
+from typing import Any, Tuple, TypeVar, cast
 import os
 
 from omegaconf import OmegaConf, DictConfig
@@ -11,6 +11,9 @@ import orbax.checkpoint as ocp
 from simdist.data.dataset import DatasetBatch
 from simdist.utils import paths
 from simdist.modeling import models
+
+
+T = TypeVar("T")
 
 
 def load_model_from_ckpt(
@@ -59,9 +62,12 @@ def dataset_batch_to_jax(batch: DatasetBatch) -> DatasetBatch:
     return _numpy_dict_to_jax(batch)
 
 
-def repeat_along_batch_dim(x: jnp.ndarray | dict[str, jnp.ndarray], B: int):
+def repeat_along_batch_dim(x: T, B: int) -> T:
     """Repeat the input array or dict of arrays along the batch dimension B."""
-    return jax.tree.map(lambda y: jnp.tile(y[None, ...], (B,) + (1,) * y.ndim), x)
+    return cast(
+        T,
+        jax.tree.map(lambda y: jnp.tile(y[None, ...], (B,) + (1,) * y.ndim), x),
+    )
 
 
 def create_param_filter(param_names: list[str]):

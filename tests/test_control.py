@@ -41,12 +41,12 @@ def test_mppi_controller(cfg: dict):
     ctrl_in: ControllerInput = {
         "proprio_obs": model_in["proprio_obs_hist"][0, 0],
         "extero_obs": model_in["extero_obs"][0],
-        "command": model_in["fut_cmds"][0, 0],
         "prev_action": model_in["acts_hist"][0, 0],
     }
     ctrl_in: ControllerInput = {k: np.array(v) for k, v in ctrl_in.items()}
-    cmd = ctrl_in["command"]
+    cmd = np.array(model_in["fut_cmds"][0, 0])
 
+    # Initialize the controller
     controller.initialize(ctrl_in, cmd)
 
     step_times = []
