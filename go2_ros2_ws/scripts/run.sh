@@ -53,6 +53,23 @@ GRAPHICS_SETTINGS+="  --runtime=nvidia \
 export ROS2_WS="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 echo "# Using ROS2_WS=$ROS2_WS"
 
+ENV_FILE="${ROS2_WS}/.env"
+if [ -f "$ENV_FILE" ]; then
+    echo "# Loading env file $ENV_FILE"
+    set -a
+    # shellcheck disable=SC1090
+    source "$ENV_FILE"
+    set +a
+fi
+
+if [ -n "${CYCLONEDDS_IFACE:-}" ]; then
+    echo "# Using CYCLONEDDS_IFACE=$CYCLONEDDS_IFACE"
+else
+    echo "Error: Could not determine network interface for CycloneDDS."
+    echo "Configure go2_ros2_ws/.env with the appropriate interface name."
+    exit 1
+fi
+
 export HOST_WORKSPACE_ROOT="$(cd "${ROS2_WS}/.." && pwd)"
 export CONTAINER_WORKSPACE_ROOT="${CONTAINER_WORKSPACE_ROOT:-${DOCKER_HOME}/$WORKSPACE_NAME}"
 export CONTAINER_ROS2_WS="${CONTAINER_WORKSPACE_ROOT}/go2_ros2_ws"
@@ -67,6 +84,7 @@ docker run --rm -it \
     -w "${CONTAINER_ROS2_WS}" \
     -e ROS2_WS="${CONTAINER_ROS2_WS}" \
     -e SIMDIST_WORKSPACE_ROOT="${CONTAINER_WORKSPACE_ROOT}" \
+    -e CYCLONEDDS_IFACE="${CYCLONEDDS_IFACE:-}" \
     --name go2_ros2 \
     go2_ros2 \
     "$@"

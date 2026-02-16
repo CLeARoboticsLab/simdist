@@ -85,6 +85,10 @@ python scripts/simulate_go2.py model.checkpoint=<checkpoint_name>
 
 ## Deployment (Hardware)
 
+### Hardware Setup (Go2)
+
+Perform the following steps on the computer running the robot, which is connected to the robot via Ethernet.
+
 First, install docker and the nvidia container toolkit, if not already installed:
 
 ```bash
@@ -96,4 +100,35 @@ Next, build the container:
 
 ```bash
 ./go2_ros2_ws/docker/build.sh
+```
+
+List network interfaces and copy the one that is connected to the robot:
+
+```bash
+ip -o link show | awk -F': ' '{print $2}'
+```
+
+Set the interface:
+
+```bash
+cp go2_ros2_ws/.env.example go2_ros2_ws/.env
+# edit go2_ros2_ws/.env and set CYCLONEDDS_IFACE=<your_interface_name>
+```
+
+### Simulation Setup (Optional)
+
+It is possible to run all the ros2 nodes with a simulated Go2 in IsaacSim using the [go2_isaac_ros2](https://github.com/CLeARoboticsLab/go2_isaac_ros2) package. Follow the instructions in the repository to set it up.
+
+### Startup
+
+Start the container:
+
+```bash
+./go2_ros2_ws/scripts/run.sh
+```
+
+Inside the container, run bringup. Use the `--mocap` flag to use motion capture instead of onboard localization, and use the `--sim` flag if simulating the Go2 in IsaacSim instead of running on hardware (see [Simulation Setup (Optional)](#simulation-setup-optional)).
+
+```bash
+./scripts/bringup.sh
 ```

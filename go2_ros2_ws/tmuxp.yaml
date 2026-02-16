@@ -1,0 +1,15 @@
+session_name: go2
+global_options:
+  mouse: on
+  set-clipboard: on
+  default-terminal: screen-256color
+windows:
+  - window_name: main
+    layout: tiled
+    shell_command_before:
+      - source ${ROS2_WS}/scripts/setup.sh
+    panes:
+      - shell_command:
+          - ros2 launch bringup launch_rviz.py
+      - shell_command:
+          - ros2 launch bringup launch_state_machine.py
