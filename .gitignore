@@ -217,6 +217,8 @@ __marimo__/
 
 .flake8
 
+.devcontainer/
+
 wandb/
 outputs/
 checkpoints/
