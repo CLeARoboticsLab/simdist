@@ -1,0 +1,58 @@
+/**:
+  ros__parameters:
+    use_sim_time: true
+    
+    topics:
+      # From Go2
+      imu_lidar: /utlidar/imu
+      imu_body: /imu_body
+      lowstate: /lowstate
+      lidar_cloud: /utlidar/cloud
+      wirelesscontroller: /wirelesscontroller
+
+      # To Go2
+      lowcmd: /lowcmd
+
+      # elevation mapping
+      lidar_cloud_transformed: /utlidar/transformed_cloud
+      terrain_cloud: /terrain_map
+      terrain_grid_map: /terrain_grid_map
+      elevation_grid: /elevation_grid
+      elevation_grid_filled: /elevation_grid_filled
+      elevation_vec: /elevation_vec
+
+      # LIO
+      state: /state_estimation
+      state_transform_and_filtered: /state_transform_and_filtered
+
+      # Observation
+      imu_body_nograv: /imu_body_nograv
+      mocap_pose: /vrpn_mocap/go2/pose
+      mocap_twist: /vrpn_mocap/go2/twist
+      mocap_odom: /mocap_odom
+      observation: /observation
+      observation_raw: /observation_raw
+      obseervation_mocap: /observation_mocap
+      vel_kf_stds: /vel_kf_stds
+      vel_kf_imu_bias: /vel_kf_imu_bias
+
+      # Control
+      cmd_vel: /cmd_vel
+      joint_pos_cmd: /joint_pos_cmd
+      robot_state: /robot_state
+
+      # Visualization
+      joint_states: /joint_states
+      elite_foot_positions: /elite_foot_positions
+      best_foot_positions: /best_foot_positions
+      best_foot_positions_no_ft: /best_foot_positions_no_ft
+      elite_foot_traj_viz: /elite_foot_traj_viz
+      best_foot_traj_viz: /best_foot_traj_viz
+      best_foot_traj_viz_no_ft: /best_foot_traj_viz_no_ft
+
+    frames:
+      world: world
+      init: map
+      body: body
+      body_z_up: body_z_up
+      body_corrected: body_corrected  # for foot position visualization only

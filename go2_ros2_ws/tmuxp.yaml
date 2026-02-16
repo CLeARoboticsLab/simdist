@@ -12,4 +12,4 @@ windows:
       - shell_command:
           - ros2 launch bringup launch_rviz.py
       - shell_command:
-          - ros2 launch bringup launch_state_machine.py
+          # - ros2 launch bringup launch_state_machine.py
