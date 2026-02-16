@@ -34,11 +34,6 @@ RUN \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/ros2_install.sh
 
-# Install Python deps for simdist
-COPY simdist.requirements.txt /tmp/simdist/requirements.txt
-RUN python3 -m pip install --no-cache-dir -r /tmp/simdist/requirements.txt && \
-    rm -rf /tmp/simdist
-
 # Create user and setup permissions on /etc/sudoers
 ARG UID=1000
 ARG GID=1000
@@ -62,7 +57,26 @@ RUN mkdir -p $ROS_WS
 WORKDIR $HOME
 ARG CMAKE_LOCAL_FETCH=${ROS_WS}/cmake_local_fetch
 
+# Isolate Python deps from apt-managed system packages.
+ENV SIMDIST_VENV=${HOME}/.simdist_venv
+RUN python3 -m virtualenv --system-site-packages "${SIMDIST_VENV}"
+ENV VIRTUAL_ENV="${SIMDIST_VENV}"
+ENV PATH="${SIMDIST_VENV}/bin:${PATH}"
+
+# Ensure editable install tooling supports PEP 660.
+RUN python -m pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Install Python deps for simdist
+COPY --chown=${UID}:${GID} simdist.requirements.txt ${HOME}/simdist.requirements.txt
+RUN python -m pip install --no-cache-dir -r "${HOME}/simdist.requirements.txt" && \
+    rm -f "${HOME}/simdist.requirements.txt"
+
 # Add configs
 ENV TERM=xterm-256color
 ENV PATH=${PATH}:${HOME}/.local/bin
 COPY .tmux.conf /etc/tmux.conf
+
+# Runtime startup hook: refresh editable simdist install each container start.
+COPY --chmod=755 entrypoint.sh /usr/local/bin/go2_entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/go2_entrypoint.sh"]
+CMD ["bash"]
