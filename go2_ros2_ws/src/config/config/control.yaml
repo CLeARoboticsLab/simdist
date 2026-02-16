@@ -1,0 +1,56 @@
+/**:
+  ros__parameters:
+    cmd:
+      rate: 50.0
+      max_vels: [1.5, 0.5, 1.0]
+      min_vels: [-0.5, -0.5, -1.0]
+
+      # set the maximum velocities when using the wireless controller
+      # wirelesscontroller_maxvels: [0.75, 0.5, 0.75]  # use this for slow speed
+      wirelesscontroller_maxvels: [1.5, 0.5, 1.0]  # use this for fast speed
+
+      # command type:
+      # - constant: use a constant commaned velocity
+      # - straight_line: travel in a straight line, constant commanded vx, using odometry for feedback
+      # - straight_line_integral: travel in a straight line, using odometry for feedback, commanded vx comes from the integral of the vx error
+      # - wirelesscontroller: (not recommended) use the wireless controller for direct commanded velocity control
+      # - wirelesscontrol_position: (recommended) use the wireless controller for position control, using odometry for feedback
+      # type: straight_line_integral
+      type: wirelesscontrol_position
+      
+      #### Parameters for the different command types ####
+      constant: [0.3, 0.0, 0.0]
+
+      straight_line:
+        vx: 0.5
+        Kp_y: 2.0
+        Kd_y: 0.25
+        Kp_yaw: 3.0
+        Kd_yaw: 0.1
+
+      straight_line_integral:
+        vx: 0.5
+        Kp_x: 1.5
+        Kd_x: 0.05
+        Kp_y: 3.0
+        Kd_y: 0.25
+        Kp_yaw: 1.5
+        Kd_yaw: 0.1
+
+      wirelesscontrol_position:
+        Kp_x: 1.0
+        Kd_x: 0.0
+        Kp_y: 1.0
+        Kd_y: 0.0
+        Kp_yaw: 1.5
+        Kd_yaw: 0.0
+
+    state_machine:
+      rate: 1000.0
+      standing_duration: 2.5
+      proning_duration: 1.5
+      stand_Kp: 50.0
+      walking_Kp: 25.0
+      proning_Kp: 20.0
+      prone_Kp: 0.0
+      Kd: 0.5
