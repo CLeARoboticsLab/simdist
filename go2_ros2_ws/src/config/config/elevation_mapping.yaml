@@ -1,0 +1,17 @@
+/**:
+  ros__parameters:
+    height_in_world_z_axis: true  # whether the height is in the world z-axis or the body z-axis
+    grid_layer: elevation
+    aggregation: mean  # min or mean
+    num_neighbors: 5  # number of nearest neighbors for grid filling]
+
+    grid_resolution: 0.1
+    grid_length_x: 2.0
+    grid_length_y: 1.4
+    grid_offset_x: 0.5
+    grid_offset_y: 0.0
+
+    normalize_for_nn: false
+    nan_replacement: 0.0  # replace NaNs in the vector elevation map with this value
+
+    req_imu_count: 500 # number of IMU measurements to initialize the orientation

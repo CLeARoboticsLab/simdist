@@ -66,8 +66,8 @@ def generate_launch_description():
         [
             tf_launch,
             lio_launch,
+            elevation_mapping_launch,
             # measurement_launch,
-            # elevation_mapping_launch,
             # robot_state_launch,
         ]
     )
