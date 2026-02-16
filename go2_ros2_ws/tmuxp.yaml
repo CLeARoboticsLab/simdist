@@ -13,3 +13,11 @@ windows:
           - ros2 launch bringup launch_rviz.py
       - shell_command:
           - ros2 launch bringup launch_state_machine.py
+      - shell_command:
+        - '[ "$MOCAP" = "true" ] && ros2 launch vrpn_mocap client.launch.yaml server:=$MOCAP_IP || echo "Motion capture disabled"'
+      - focus: true
+        shell_command:
+          - history -s "ros2 launch bringup launch_go2.py"
+          - cmd: "ros2 launch bringup launch_go2.py"
+            enter: false
+      - pane

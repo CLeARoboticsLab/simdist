@@ -49,4 +49,5 @@ sudo apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-tf2-ros \
     ros-${ROS_DISTRO}-tf2-ros-py \
     ros-${ROS_DISTRO}-tf2-sensor-msgs \
+    ros-${ROS_DISTRO}-vrpn-mocap \
     ros-${ROS_DISTRO}-xacro || exit 1

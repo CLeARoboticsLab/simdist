@@ -115,6 +115,8 @@ cp go2_ros2_ws/.env.example go2_ros2_ws/.env
 # edit go2_ros2_ws/.env and set CYCLONEDDS_IFACE=<your_interface_name>
 ```
 
+If motion capture will be used (such as Vicon or OptiTrack) for localization, set the IP address of the associated VRPN server. This is usually the IP address of the computer running the motion capture software. Do this by editing the `go2_ros2_ws/.env` file and setting `MOCAP_IP=<your_mocap_ip_address>`. Set the name of the tracker to `go2` in the motion capture software. Otherwise, localization will be accomplished with LIO.
+
 Start the container:
 
 ```bash

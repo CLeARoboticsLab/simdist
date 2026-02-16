@@ -104,6 +104,7 @@ docker run --rm -it \
     -e SIMDIST_WORKSPACE_ROOT="${CONTAINER_WORKSPACE_ROOT}" \
     -e CYCLONEDDS_IFACE="${CYCLONEDDS_IFACE:-}" \
     -e USE_SIM="${USE_SIM}" \
+    -e MOCAP_IP="${MOCAP_IP:-}" \
     --name go2_ros2 \
     go2_ros2 \
     "${CONTAINER_ARGS[@]}"
