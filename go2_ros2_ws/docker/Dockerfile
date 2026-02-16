@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.6.2-devel-ubuntu22.04
+FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
 
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=C.UTF-8 
