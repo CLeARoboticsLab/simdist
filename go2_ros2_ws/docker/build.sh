@@ -53,9 +53,19 @@ fi
 
 TZ_VALUE="${TZ:-$(cat /etc/timezone 2>/dev/null || echo Etc/UTC)}"
 IMAGE_NAME="${IMAGE_NAME:-go2_ros2}"
+UID_VALUE="${UID:-$(id -u)}"
+GID_VALUE="${GID:-$(id -g)}"
 
 echo "# Generated ${OUTPUT_PATH} from ${PYPROJECT_PATH}"
 echo "# Building Docker image '${IMAGE_NAME}' in ${SCRIPT_DIR}"
+echo "# Using UID=${UID_VALUE} GID=${GID_VALUE}"
 
 cd "${SCRIPT_DIR}"
-docker build --build-arg TZ="${TZ_VALUE}" --network=host -t "${IMAGE_NAME}" "$@" .
+docker build \
+    --build-arg TZ="${TZ_VALUE}" \
+    --build-arg UID="${UID_VALUE}" \
+    --build-arg GID="${GID_VALUE}" \
+    --network=host \
+    -t "${IMAGE_NAME}" \
+    "$@" \
+    .

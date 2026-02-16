@@ -115,6 +115,18 @@ cp go2_ros2_ws/.env.example go2_ros2_ws/.env
 # edit go2_ros2_ws/.env and set CYCLONEDDS_IFACE=<your_interface_name>
 ```
 
+Start the container:
+
+```bash
+./go2_ros2_ws/scripts/run.sh
+```
+
+Build the workspace:
+
+```bash
+colcon build
+```
+
 ### Simulation Setup (Optional)
 
 It is possible to run all the ros2 nodes with a simulated Go2 in IsaacSim using the [go2_isaac_ros2](https://github.com/CLeARoboticsLab/go2_isaac_ros2) package. Follow the instructions in the repository to set it up.
