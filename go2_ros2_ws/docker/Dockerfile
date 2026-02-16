@@ -71,7 +71,7 @@ COPY --chown=${UID}:${GID} simdist.requirements.txt ${HOME}/simdist.requirements
 RUN python -m pip install --no-cache-dir -r "${HOME}/simdist.requirements.txt" && \
     rm -f "${HOME}/simdist.requirements.txt"
 
-# Install extra pip tools (e.g. tmuxp) in the image venv.
+# Install extra pip deps
 COPY --chown=${UID}:${GID} pip_pkgs.txt ${HOME}/pip_pkgs.txt
 RUN python -m pip install --no-cache-dir --upgrade -r "${HOME}/pip_pkgs.txt" && \
     rm -f "${HOME}/pip_pkgs.txt"
