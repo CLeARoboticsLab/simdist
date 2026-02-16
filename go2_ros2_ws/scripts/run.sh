@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+
+WORKSPACE_NAME=simdist
 DOCKER_USER=go2
 DOCKER_HOME=/home/${DOCKER_USER}
 
@@ -50,9 +53,20 @@ GRAPHICS_SETTINGS+="  --runtime=nvidia \
 export ROS2_WS="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 echo "# Using ROS2_WS=$ROS2_WS"
 
+export HOST_WORKSPACE_ROOT="$(cd "${ROS2_WS}/.." && pwd)"
+export CONTAINER_WORKSPACE_ROOT="${CONTAINER_WORKSPACE_ROOT:-${DOCKER_HOME}/$WORKSPACE_NAME}"
+export CONTAINER_ROS2_WS="${CONTAINER_WORKSPACE_ROOT}/go2_ros2_ws"
+
+echo "# Mounting HOST_WORKSPACE_ROOT=$HOST_WORKSPACE_ROOT"
+echo "# Into CONTAINER_WORKSPACE_ROOT=$CONTAINER_WORKSPACE_ROOT"
+
 docker run --rm -it \
     $NETWORK_SETTINGS \
     $GRAPHICS_SETTINGS \
+    -v "${HOST_WORKSPACE_ROOT}:${CONTAINER_WORKSPACE_ROOT}:rw" \
+    -w "${CONTAINER_ROS2_WS}" \
+    -e ROS2_WS="${CONTAINER_ROS2_WS}" \
+    -e SIMDIST_WORKSPACE_ROOT="${CONTAINER_WORKSPACE_ROOT}" \
     --name go2_ros2 \
     go2_ros2 \
     "$@"

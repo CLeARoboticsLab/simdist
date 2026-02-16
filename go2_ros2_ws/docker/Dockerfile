@@ -19,18 +19,25 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # install base packages
-RUN --mount=type=bind,source=base_pkgs.txt,target=/tmp/base_pkgs.txt \
+COPY base_pkgs.txt /tmp/base_pkgs.txt
+RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends $(cat /tmp/base_pkgs.txt) && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* /tmp/base_pkgs.txt
 
 # setup ROS
 ENV ROS_DISTRO=humble
-RUN --mount=type=bind,source=ros2_install.sh,target=/tmp/ros2_install.sh \
+COPY ros2_install.sh /tmp/ros2_install.sh
+RUN \
     bash /tmp/ros2_install.sh && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* /tmp/ros2_install.sh
+
+# Install Python deps for simdist
+COPY simdist.requirements.txt /tmp/simdist/requirements.txt
+RUN python3 -m pip install --no-cache-dir -r /tmp/simdist/requirements.txt && \
+    rm -rf /tmp/simdist
 
 # Create user and setup permissions on /etc/sudoers
 ARG UID=1000

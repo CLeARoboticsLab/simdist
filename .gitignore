@@ -221,3 +221,4 @@ wandb/
 outputs/
 checkpoints/
 datasets/
+go2_ros2_ws/docker/simdist.requirements.txt

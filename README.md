@@ -82,3 +82,18 @@ Deploy, in simulation, the pretrained world model using sampling-based planning 
 ```bash
 python scripts/simulate_go2.py model.checkpoint=<checkpoint_name>
 ```
+
+## Deployment (Hardware)
+
+First, install docker and the nvidia container toolkit, if not already installed:
+
+```bash
+sudo apt-get update
+./go2_ros2_ws/setup/docker_install.sh && ./go2_ros2_ws/setup/nvidia-container-toolkit.sh
+```
+
+Next, build the container:
+
+```bash
+./go2_ros2_ws/docker/build.sh
+```
