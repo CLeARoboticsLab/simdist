@@ -12,7 +12,7 @@ control_config = os.path.join(config_dir, "config", "control.yaml")
 def generate_launch_description():
     use_sim = os.environ.get("USE_SIM", "false").lower() == "true"
 
-    prefix = "gnome-terminal --" if use_sim else ""
+    prefix = "xterm -e" if use_sim else ""
 
     state_machine = Node(
         package="control",

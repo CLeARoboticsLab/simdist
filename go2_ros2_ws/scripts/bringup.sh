@@ -1,12 +1,8 @@
-USE_SIM=false
+USE_SIM="${USE_SIM:-false}"
 MOCAP=false
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --sim|sim=true)
-            USE_SIM=true
-            shift
-            ;;
         --mocap|mocap=true)
             MOCAP=true
             shift

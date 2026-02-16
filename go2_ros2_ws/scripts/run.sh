@@ -3,6 +3,20 @@
 WORKSPACE_NAME=simdist
 DOCKER_USER=go2
 DOCKER_HOME=/home/${DOCKER_USER}
+USE_SIM="${USE_SIM:-false}"
+CONTAINER_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --sim|sim=true)
+            USE_SIM=true
+            ;;
+        *)
+            CONTAINER_ARGS+=("$1")
+            ;;
+    esac
+    shift
+done
 
 
 # Default docker network
@@ -11,6 +25,9 @@ if [ -z "$DOCKER_NETWORK" ]; then
 fi
 echo "# Using host DOCKER_NETWORK=$DOCKER_NETWORK"
 NETWORK_SETTINGS="--network $DOCKER_NETWORK "
+if [ "$USE_SIM" = "true" ]; then
+    NETWORK_SETTINGS+="--ipc=host "
+fi
 
 # x11
 if [ -z "${DISPLAY:-}" ]; then
@@ -76,6 +93,7 @@ export CONTAINER_ROS2_WS="${CONTAINER_WORKSPACE_ROOT}/go2_ros2_ws"
 
 echo "# Mounting HOST_WORKSPACE_ROOT=$HOST_WORKSPACE_ROOT"
 echo "# Into CONTAINER_WORKSPACE_ROOT=$CONTAINER_WORKSPACE_ROOT"
+echo "# Using USE_SIM=$USE_SIM"
 
 docker run --rm -it \
     $NETWORK_SETTINGS \
@@ -85,6 +103,7 @@ docker run --rm -it \
     -e ROS2_WS="${CONTAINER_ROS2_WS}" \
     -e SIMDIST_WORKSPACE_ROOT="${CONTAINER_WORKSPACE_ROOT}" \
     -e CYCLONEDDS_IFACE="${CYCLONEDDS_IFACE:-}" \
+    -e USE_SIM="${USE_SIM}" \
     --name go2_ros2 \
     go2_ros2 \
-    "$@"
+    "${CONTAINER_ARGS[@]}"

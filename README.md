@@ -133,14 +133,16 @@ It is possible to run all the ros2 nodes with a simulated Go2 in IsaacSim using 
 
 ### Startup
 
-Start the container:
+Start the container. Use the `--sim` flag if simulating the Go2 in IsaacSim instead of running on hardware (see [Simulation Setup (Optional)](#simulation-setup-optional)).
 
 ```bash
 ./go2_ros2_ws/scripts/run.sh
 ```
 
-Inside the container, run bringup. Use the `--mocap` flag to use motion capture instead of onboard localization, and use the `--sim` flag if simulating the Go2 in IsaacSim instead of running on hardware (see [Simulation Setup (Optional)](#simulation-setup-optional)).
+Inside the container, run bringup. Use the `--mocap` flag to use motion capture instead of onboard localization.
 
 ```bash
 ./scripts/bringup.sh
 ```
+
+Press the start button on the Unitree Go2 controller twice to stand the robot up. (If running with `--sim`, press the space bar twice in the xterm window.)
