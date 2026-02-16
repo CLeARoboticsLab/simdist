@@ -22,7 +22,6 @@ rsync
 sudo
 time
 tmux
-tmuxp
 vim
 wget
 x11-apps
