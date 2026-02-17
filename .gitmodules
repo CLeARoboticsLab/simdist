@@ -1,3 +1,6 @@
 [submodule "IsaacLab"]
 	path = IsaacLab
 	url = https://github.com/isaac-sim/IsaacLab.git
+[submodule "go2_ros2_ws/src/thirdparty/go2_description"]
+	path = go2_ros2_ws/src/thirdparty/go2_description
+	url = https://github.com/Unitree-Go2-Robot/go2_description.git
