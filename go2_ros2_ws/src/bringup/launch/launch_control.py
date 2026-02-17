@@ -20,7 +20,7 @@ def generate_launch_description():
     )
 
     controller = Node(
-        package="control",
+        package="simdist_controller",
         executable="simdist_controller_node.py",
         name="simdist_controller_node",
         output="screen",

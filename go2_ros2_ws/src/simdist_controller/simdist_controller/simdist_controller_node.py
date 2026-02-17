@@ -22,7 +22,8 @@ from geometry_msgs.msg import Twist
 from simdist.control.controller_base import ControllerInput
 from simdist.control.mppi import MppiController
 from simdist.utils import paths, model as model_utils, config
-from control.episode_logger_hdf5 import HDF5EpisodeLogger as EpisodeLogger
+from simdist_controller.episode_logger_hdf5 import HDF5EpisodeLogger as EpisodeLogger
+from utils.loop_timer import LoopTimer
 
 
 class SimdistControllerNode(Node):
@@ -105,42 +106,42 @@ class SimdistControllerNode(Node):
         self.update_group = MutuallyExclusiveCallbackGroup()
 
         # Subscribers
-        self.robot_state_sub = self.create_subscription(
-            String,
-            self.robot_state_topic,
-            self.robot_state_callback,
-            1,
-            callback_group=self.robot_state_sub_group,
-        )
-        self.observation_sub = self.create_subscription(
-            Float32MultiArray,
-            self.observation_topic,
-            self.observation_callback,
-            1,
-            callback_group=self.observation_sub_group,
-        )
-        self.elevation_sub = self.create_subscription(
-            Float32MultiArray,
-            self.elevation_topic,
-            self.elevation_callback,
-            1,
-            callback_group=self.elevation_sub_group,
-        )
-        self.cmd_vel_sub = self.create_subscription(
-            Twist,
-            self.cmd_vel_topic,
-            self.cmd_vel_callback,
-            1,
-            callback_group=self.cmd_vel_sub_group,
-        )
+        # self.robot_state_sub = self.create_subscription(
+        #     String,
+        #     self.robot_state_topic,
+        #     self.robot_state_callback,
+        #     1,
+        #     callback_group=self.robot_state_sub_group,
+        # )
+        # self.observation_sub = self.create_subscription(
+        #     Float32MultiArray,
+        #     self.observation_topic,
+        #     self.observation_callback,
+        #     1,
+        #     callback_group=self.observation_sub_group,
+        # )
+        # self.elevation_sub = self.create_subscription(
+        #     Float32MultiArray,
+        #     self.elevation_topic,
+        #     self.elevation_callback,
+        #     1,
+        #     callback_group=self.elevation_sub_group,
+        # )
+        # self.cmd_vel_sub = self.create_subscription(
+        #     Twist,
+        #     self.cmd_vel_topic,
+        #     self.cmd_vel_callback,
+        #     1,
+        #     callback_group=self.cmd_vel_sub_group,
+        # )
 
-        # Publishers
-        self.action_pub = self.create_publisher(
-            Float32MultiArray,
-            self.output_topic,
-            100,
-            callback_group=self.publisher_group,
-        )
+        # # Publishers
+        # self.action_pub = self.create_publisher(
+        #     Float32MultiArray,
+        #     self.output_topic,
+        #     100,
+        #     callback_group=self.publisher_group,
+        # )
 
 
 def main(args=None):
