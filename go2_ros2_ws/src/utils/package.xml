@@ -1,24 +1,14 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>measurement</name>
+  <name>utils</name>
   <version>0.1.0</version>
-  <description>measurement</description>
+  <description>Shared utility modules for ROS 2 nodes.</description>
   <maintainer email="jake.j.levy@gmail.com">jl79444</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-
-  <depend>rclcpp</depend>
-  <depend>nav_msgs</depend>
-  <depend>tf2</depend>
-  <depend>tf2_ros</depend>
-  <depend>tf2_geometry_msgs</depend>
-  <depend>sensor_msgs</depend>
-  <depend>rosgraph_msgs</depend>
-  <depend>Eigen3</depend>
-  <depend>unitree_go</depend>
-  <exec_depend>utils</exec_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

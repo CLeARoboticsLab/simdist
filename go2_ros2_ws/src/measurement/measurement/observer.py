@@ -19,7 +19,7 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 from unitree_go.msg import LowState
 
-from measurement.loop_timer import LoopTimer
+from utils.loop_timer import LoopTimer
 
 
 DEFAULT_JOINT_POS_UNITREE = np.array([0.0, 0.67, -1.3] * 4, dtype=np.float32)
