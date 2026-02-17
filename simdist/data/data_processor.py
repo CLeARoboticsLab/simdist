@@ -116,8 +116,8 @@ class DataProcessor:
             if ep_len < self.H + self.T + self.beg_padding + self.end_padding:
                 continue
 
-            if "obs_concat" in episode_data.data:
-                ep_proprio_obs = episode_data.data["obs_concat"]
+            if "proprio_obs" in episode_data.data:
+                ep_proprio_obs = episode_data.data["proprio_obs"]
             elif "obs" in episode_data.data:
                 ep_proprio_obs = torch.cat(
                     [episode_data.data["obs"][name] for name in self.proprio_obs_names],
@@ -125,7 +125,7 @@ class DataProcessor:
                 )
             else:
                 raise ValueError(
-                    f"Episode {ep_name} does not contain obs_concat or obs data."
+                    f"Episode {ep_name} does not contain proprio_obs or obs data."
                 )
             proprio_obs_np = _to_valid_numpy(ep_proprio_obs)
             proprio_obs_h5.append(proprio_obs_np)

@@ -135,6 +135,13 @@ def get_raw_data_path(dataset_name: str):
     return os.path.join(get_dataset_dir(dataset_name), _FILENAMES["RAW_DATA_FILE_NAME"])
 
 
+def get_real_raw_data_dir(dataset_name: str):
+    """Get the directory for the real raw data."""
+    return os.path.join(
+        get_real_dataset_dir(dataset_name), _FILENAMES["RAW_DATA_DIR_NAME"], "raw"
+    )
+
+
 def get_processed_data_dir(
     dataset_name: str, system_name: str, history_length: int, prediction_length: int
 ):
