@@ -68,6 +68,6 @@ def generate_launch_description():
             lio_launch,
             elevation_mapping_launch,
             measurement_launch,
-            # robot_state_launch,
+            robot_state_launch,
         ]
     )
