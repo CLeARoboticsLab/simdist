@@ -147,4 +147,8 @@ Inside the container, run bringup. Use the `--mocap` flag to use motion capture 
 ./scripts/bringup.sh
 ```
 
-Press the start button on the Unitree Go2 controller twice to stand the robot up. (If running with `--sim`, press the space bar twice in the xterm window.)
+Press the `start` button on the Unitree Go2 controller twice to stand the robot up. (If running with `--sim`, press the space bar twice in the xterm window). Then, start SLAM and other support nodes with the below command. One of the tmux panes should already be populated with the command. We initialize these nodes with the robot standing up to reference the world frame from this pose.
+
+```bash
+ros2 launch bringup launch_go2.py
+```
