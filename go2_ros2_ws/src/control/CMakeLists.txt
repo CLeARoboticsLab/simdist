@@ -32,9 +32,9 @@ install(TARGETS cmd_vel_pub state_machine
 ament_python_install_package(${PROJECT_NAME})
 
 # Install Python entry points
-# install(PROGRAMS
-#   control/go2_controller_node.py
-#   DESTINATION lib/${PROJECT_NAME}
-# )
+install(PROGRAMS
+  control/simdist_controller_node.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 ament_package()

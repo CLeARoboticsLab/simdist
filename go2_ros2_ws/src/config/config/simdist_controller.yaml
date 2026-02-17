@@ -1,0 +1,27 @@
+rate: 50.0
+action_scale: 0.25
+height_scan_offset: 0.3
+
+model:
+  # Either enter an absolute path to the model checkpoint, or the name of the checkpoint in checkpoints dir
+  checkpoint: go2_2026-02-12
+  step:  # leave blank for latest
+
+mppi:
+  num_samples: 450
+  iterations: 8 # number of MPPI iterations before taking a step
+  delay: 1  # the number of anticipated steps the controller takes to run
+  mixture_coef: 0.05
+  min_std: 0.05
+  base_act_std: 0.05
+  init_std: 2.0
+  num_elites: 64
+  temperature: 0.25
+  momentum: 0.0
+  discount: 0.99
+  seed: 42
+
+logging:
+  enabled: true
+  # same of the dataset in the datasets/real directory to store data
+  dataset_name: final_vids/2025-09-11_new-ptfe-instamorph-4_c_d_ft-c/0.5

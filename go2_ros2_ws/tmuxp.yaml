@@ -20,4 +20,8 @@ windows:
           - history -s "ros2 launch bringup launch_go2.py"
           - cmd: "ros2 launch bringup launch_go2.py"
             enter: false
+      - shell_command:
+          - history -s "ros2 launch bringup launch_control.py"
+          - cmd: "ros2 launch bringup launch_control.py"
+            enter: false
       - pane
