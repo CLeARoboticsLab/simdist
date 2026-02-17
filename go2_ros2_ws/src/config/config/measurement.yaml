@@ -1,0 +1,20 @@
+/**:
+  ros__parameters:
+    imu_repub:
+      rate: 100.0
+      alpha: 0.3
+      gravity_init_time: 1.0
+
+    state_filter:
+      alpha: 1.0
+      downsample_ratio: 1
+
+    observer:
+      action_scale: 0.25
+      height_scan_offset: 0.3
+      phase_period: 0.5
+      use_imu_lin_acc: false  # add the imu linear accel to the observation
+      rate: 50.0
+      base_lin_vel_source: odom  # odom
+      base_ang_vel_source: odom  # odom, imu
+      proj_grav_source: odom  # odom, imu

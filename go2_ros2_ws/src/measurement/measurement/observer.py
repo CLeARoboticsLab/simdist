@@ -9,20 +9,17 @@ from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 import tf_transformations as tf
-from ament_index_python.packages import get_package_share_directory
 
-from tyswy.control.estimators.go2_kalman_filter import Go2KalmanFilter
-from tyswy.control.estimators.go2_kalman_filter_velocity import Go2KalmanFilterVelocity
-from tyswy.utils.loop_timer import LoopTimer
 import numpy as np
 import threading
-import yaml
 
 from std_msgs.msg import Float32MultiArray, String
 from sensor_msgs.msg import Imu
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 from unitree_go.msg import LowState
+
+from measurement.loop_timer import LoopTimer
 
 
 DEFAULT_JOINT_POS_UNITREE = np.array([0.0, 0.67, -1.3] * 4, dtype=np.float32)
@@ -47,16 +44,12 @@ class ObserverNode(Node):
         self.declare_parameter("topics.observation", "/observation")
         self.declare_parameter("topics.observation_raw", "/observation_raw")
         self.declare_parameter("observer.use_imu_lin_acc", False)
-        self.declare_parameter("topics.vel_kf_stds", "/vel_kf_stds")
-        self.declare_parameter("topics.vel_kf_imu_bias", "/vel_kf_imu_bias")
 
         self.declare_parameter("topics.robot_state", "/robot_state")
         self.declare_parameter("topics.elevation_vec", "/elevation_vec")
         self.declare_parameter("topics.joint_pos_cmd", "/joint_pos_cmd")
         self.declare_parameter("topics.cmd_vel", "/cmd_vel")
 
-        self.declare_parameter("observer.use_kf", False)
-        self.declare_parameter("observer.use_kf_velocity", "auto")  # CHANGE
         self.declare_parameter("observer.action_scale", 0.25)
         self.declare_parameter("observer.height_scan_offset", 0.3)
         self.declare_parameter("observer.phase_period", 0.5)
@@ -110,29 +103,6 @@ class ObserverNode(Node):
         self.cmd_vel_topic = (
             self.get_parameter("topics.cmd_vel").get_parameter_value().string_value
         )
-        self.vel_kf_stds_topic = (
-            self.get_parameter("topics.vel_kf_stds").get_parameter_value().string_value
-        )
-        self.vel_kf_imu_bias_topic = (
-            self.get_parameter("topics.vel_kf_imu_bias")
-            .get_parameter_value()
-            .string_value
-        )
-
-        self.use_kf = (
-            self.get_parameter("observer.use_kf").get_parameter_value().bool_value
-        )
-        use_kf_velocity = (
-            self.get_parameter("observer.use_kf_velocity")
-            .get_parameter_value()
-            .string_value
-        )
-        assert use_kf_velocity in ["auto", "true", "false"]
-        if use_kf_velocity == "auto":
-            no_mocap = os.environ.get("NO_MOCAP").lower() == "true"
-            self.use_kf_velocity = no_mocap
-        else:
-            self.use_kf_velocity = use_kf_velocity == "true"
         self.action_scale = (
             self.get_parameter("observer.action_scale")
             .get_parameter_value()
@@ -186,24 +156,6 @@ class ObserverNode(Node):
         self.obs = None
         self.step_count = 0
 
-        self.kf = None
-        if self.use_kf:
-            config_dir = get_package_share_directory("config")
-            yaml_path = os.path.join(config_dir, "config", "kalman_filter.yaml")
-            with open(yaml_path, "r") as file:
-                kf_config_dict = yaml.safe_load(file)
-            self.kf = Go2KalmanFilter(kf_config_dict)
-
-        self.kfv = None
-        if self.use_kf_velocity:
-            config_dir = get_package_share_directory("config")
-            yaml_path = os.path.join(
-                config_dir, "config", "kalman_filter_velocity.yaml"
-            )
-            with open(yaml_path, "r") as file:
-                kf_config_dict = yaml.safe_load(file)
-            self.kfv = Go2KalmanFilterVelocity(kf_config_dict)
-
         self.low_state_lock = threading.Lock()
         self.imu_body_lock = threading.Lock()
         self.imu_body_nograv_lock = threading.Lock()
@@ -214,7 +166,6 @@ class ObserverNode(Node):
 
         self.low_state_sub_group = MutuallyExclusiveCallbackGroup()
         self.imu_body_sub_group = MutuallyExclusiveCallbackGroup()
-        self.imu_body_nograv_sub_group = MutuallyExclusiveCallbackGroup()
         self.odom_sub_group = MutuallyExclusiveCallbackGroup()
         self.observation_group = MutuallyExclusiveCallbackGroup()
         self.robot_state_sub_group = MutuallyExclusiveCallbackGroup()
@@ -235,13 +186,6 @@ class ObserverNode(Node):
             self.imu_body_callback,
             1,
             callback_group=self.imu_body_sub_group,
-        )
-        self.imu_body_nograv_sub = self.create_subscription(
-            Imu,
-            self.imu_body_nograv_topic,
-            self.imu_body_nograv_callback,
-            1,
-            callback_group=self.imu_body_nograv_sub_group,
         )
         self.odom_sub = self.create_subscription(
             Odometry,
@@ -285,24 +229,6 @@ class ObserverNode(Node):
             100,
             callback_group=self.observation_group,
         )
-        self.observation_raw_pub = self.create_publisher(
-            Float32MultiArray,
-            self.observation_raw_topic,
-            100,
-            callback_group=self.observation_group,
-        )
-        self.vel_kf_stds_pub = self.create_publisher(
-            Float32MultiArray,
-            self.vel_kf_stds_topic,
-            100,
-            callback_group=self.observation_group,
-        )
-        self.vel_kf_imu_bias_pub = self.create_publisher(
-            Float32MultiArray,
-            self.vel_kf_imu_bias_topic,
-            100,
-            callback_group=self.observation_group,
-        )
 
         self.obs_timer = LoopTimer(
             print_interval_sec=1.0,
@@ -320,17 +246,6 @@ class ObserverNode(Node):
 
     def robot_state_callback(self, msg: String):
         self.robot_state = msg.data
-        if self.robot_state == "WALKING" or self.robot_state == "STAND":
-            if self.use_kf:
-                self.kf.reset(
-                    self.obs,
-                    self.latest_elevation_vec,
-                )
-            if self.use_kf_velocity:
-                self.kfv.reset(
-                    self._get_obs_no_lin_vel(self.obs),
-                    self.latest_elevation_vec,
-                )
 
     def elevation_callback(self, msg: Float32MultiArray):
         with self.elev_lock:
@@ -419,21 +334,6 @@ class ObserverNode(Node):
                     proj_grav_unnorm / np.linalg.norm(proj_grav_unnorm)
                 )
 
-    def imu_body_nograv_callback(self, msg: Imu):
-        if self.kfv is None:
-            return
-        with self.imu_body_nograv_lock:
-            if self.robot_state == "WALKING":
-                imu_time = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
-                imu = np.array(
-                    [
-                        msg.linear_acceleration.x,
-                        msg.linear_acceleration.y,
-                        msg.linear_acceleration.z,
-                    ]
-                )
-                self.kfv.propagate(imu, imu_time)
-
     def publish_observation(self):
         self.obs_timer.tick()
 
@@ -476,71 +376,10 @@ class ObserverNode(Node):
                     ]
                 )
 
-        # publish raw observation
-        msg = Float32MultiArray()
-        msg.data = self.obs.tolist()
-        self.observation_raw_pub.publish(msg)
-
-        # KF estimation
-        if self.use_kf:
-            if not self.kf.initialized:
-                self.get_logger().warn("Initializing Kalman filter...")
-                with self.elev_lock:
-                    self.kf.initialize(
-                        self.obs,
-                        self.latest_elevation_vec,
-                    )
-                self.get_logger().warn("Kalman filter initialized.")
-
-            if self.robot_state == "WALKING":
-                self.obs = self.kf.estimate(self.obs)
-                self.obs[-2:] = cos_sin_phase  # don't estimate phase
-
-        # KF estimation (velocity only)
-        if self.use_kf_velocity:
-            if not self.kfv.initialized:
-                self.get_logger().warn("Initializing Kalman filter (velocity)...")
-                with self.elev_lock:
-                    self.kfv.initialize(
-                        self._get_obs_no_lin_vel(self.obs),
-                        self.latest_elevation_vec,
-                    )
-                self.get_logger().warn("Kalman filter (velocity) initialized.")
-            if self.robot_state == "WALKING":
-                with self.elev_lock, self.act_lock, self.cmd_lock:
-                    est = self.kfv.estimate(
-                        self._get_obs_no_lin_vel(self.obs),
-                        self.latest_elevation_vec,
-                        self.latest_cmd_vel,
-                        self.latest_action,
-                    )
-                self.obs[:3] = est["v_hat"]
-
-                stds = est["stds"][0:3]
-                msg = Float32MultiArray()
-                msg.data = stds.tolist()
-                self.vel_kf_stds_pub.publish(msg)
-
-                if est["bias"] is not None:
-                    msg = Float32MultiArray()
-                    msg.data = est["bias"].tolist()
-                    self.vel_kf_imu_bias_pub.publish(msg)
-
-        # publish filtered observation
+        # publish observation
         msg = Float32MultiArray()
         msg.data = self.obs.tolist()
         self.observation_pub.publish(msg)
-
-        # propagate here
-        if self.use_kf:
-            with self.elev_lock, self.act_lock, self.cmd_lock:
-                if self.robot_state == "WALKING":
-                    self.kf.propagate(
-                        self.obs,
-                        self.latest_elevation_vec,
-                        self.latest_cmd_vel,
-                        self.latest_action,
-                    )
 
         self.step_count += 1
 

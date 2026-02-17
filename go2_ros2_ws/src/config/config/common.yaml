@@ -31,10 +31,6 @@
       mocap_twist: /vrpn_mocap/go2/twist
       mocap_odom: /mocap_odom
       observation: /observation
-      observation_raw: /observation_raw
-      obseervation_mocap: /observation_mocap
-      vel_kf_stds: /vel_kf_stds
-      vel_kf_imu_bias: /vel_kf_imu_bias
 
       # Control
       cmd_vel: /cmd_vel

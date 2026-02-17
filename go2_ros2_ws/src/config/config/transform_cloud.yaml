@@ -1,0 +1,11 @@
+/**:
+  ros__parameters:
+    # determines the portion of the point cloud (in the body frame) which is removed
+    # this should be set to the area under the base to prevent leg lidar points from being used
+    cam_offset: 0.05
+    x_filter_min: -0.7
+    x_filter_max: 0.5
+    y_filter_min: -0.3
+    y_filter_max: 0.3
+    z_filter_min: -0.6
+    z_filter_max: 0.0
