@@ -147,8 +147,22 @@ Inside the container, run bringup. Use the `--mocap` flag to use motion capture 
 ./scripts/bringup.sh
 ```
 
-Press the `start` button on the Unitree Go2 controller twice to stand the robot up. (If running with `--sim`, press the space bar twice in the xterm window). Then, start SLAM and other support nodes with the below command. One of the tmux panes should already be populated with the command. We initialize these nodes with the robot standing up to reference the world frame from this pose.
+Press the `start` button on the Unitree Go2 controller **twice** to stand the robot up. (If running with `--sim`, press the space bar **twice** in the xterm window). Then, start SLAM and other support nodes with the below command; one of the tmux panes should already be populated with the command. We initialize these nodes with the robot standing up to reference the world frame from this pose.
 
 ```bash
 ros2 launch bringup launch_go2.py
 ```
+
+Next, start the controller with the below command; one of the tmux panes should already be populated with the command. You can configure the control task in [go2_ros2_ws/src/config/config/control.yaml](go2_ros2_ws/src/config/config/control.yaml) and the controller parameters in [go2_ros2_ws/src/config/config/simdist_controller.yaml](go2_ros2_ws/src/config/config/simdist_controller.yaml). Within the second file, you can specify if and where to log the real-world data. If you modify either of these files, you need to stop these conrol nodes, `colcon build`, and restart with the below command.
+
+```bash
+ros2 launch controller launch_go2.py
+```
+
+### Running the Robot
+
+While the robot is standing, press the `start` button on the Unitree Go2 controller to start walking. (If running with `--sim`, use the space bar in the xterm window). Press the `start` button again while to robot is walking to make the robot stand again. Press any other button while the robot is walking to force it into a fall recovery mode. While the robot is standing or in recovery mode, press a button other than the `start` button to make the robot lie down.
+
+### Shutdown
+
+Detach from the tmux session with `Ctrl + b`, then `d`. Stop the container with `exit`.
