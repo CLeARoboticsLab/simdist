@@ -1,3 +1,6 @@
+cd $ROS2_WS
+colcon build
+
 USE_SIM="${USE_SIM:-false}"
 MOCAP=false
 
