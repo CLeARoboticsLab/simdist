@@ -60,9 +60,9 @@ public:
     loop_thread_ = std::thread(&StateMachine::run_loop, this);
 
     RCLCPP_INFO(this->get_logger(), "State machine started.");
-    RCLCPP_INFO(this->get_logger(), "Press the space bar to go to prone");
+    RCLCPP_INFO(this->get_logger(), "Press the Start button / space bar to go to prone");
     RCLCPP_INFO(this->get_logger(),
-                "Press any other key during any state to return to prone");
+                "Press any other button / key during any state to return to prone");
   }
 
   ~StateMachine() {
@@ -228,20 +228,23 @@ private:
     case RobotState::OFF:
       break;
     case RobotState::PRONE:
-      RCLCPP_INFO(this->get_logger(), "Press the space bar to stand");
+      RCLCPP_INFO(this->get_logger(), "Press the start button / space bar to stand");
       break;
     case RobotState::STANDING:
       break;
     case RobotState::STAND:
-      RCLCPP_INFO(this->get_logger(), "Press the space bar to walk");
+      RCLCPP_INFO(this->get_logger(), "Press the start button / space bar to walk");
+      RCLCPP_INFO(this->get_logger(), "Press any other button / key to return to prone");
       break;
     case RobotState::WALKING:
-      RCLCPP_INFO(this->get_logger(), "Press the space bar to stand");
+      RCLCPP_INFO(this->get_logger(), "Press the start button / space bar to stand");
+      RCLCPP_INFO(this->get_logger(), "Press any other button / key to go to recovery");
       break;
     case RobotState::PRONING:
       break;
     case RobotState::RECOVERY:
-      RCLCPP_INFO(this->get_logger(), "Press the space bar to stand");
+      RCLCPP_INFO(this->get_logger(), "Press the start button / space bar to stand");
+      RCLCPP_INFO(this->get_logger(), "Press any other button / key to return to prone");
       break;
     }
 
