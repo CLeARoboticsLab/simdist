@@ -33,7 +33,9 @@ Install simdist:
 pip install -e .
 ```
 
-## Expert Policy Training
+## Pretraining (Go2)
+
+### Expert Policy Training
 
 To train, use the below, replacing `<wandb_username>` with your Weights and Biases username (if you don't have an account, create one at [https://wandb.ai/](https://wandb.ai/)). Runs are saved to `~/simdist/checkpoints/rl/`. The environment config is found in [`simdist/rl/go2.py`](simdist/rl/go2.py) and the PPO config is found in [`simdist/rl/rsl_rl_ppo_cfg.py`](simdist/rl/rsl_rl_ppo_cfg.py).
 
@@ -53,7 +55,7 @@ After rl training, export the policies and value functions with the below, repla
 python scripts/export_policies.py -r <run_folder_name>
 ```
 
-## Data Generation
+### Data Generation
 
 Generate data with the below, replacing `<run_folder_name>` with the name of the folder from training that is found in `~/simdist/checkpoints/rl/` (for example: `2025-03-14_05-14-42`). This will save data to `~/simdist/datasets/sim/`. The configuration for data generation is found in [`config/generate_data.yaml`](config/generate_data.yaml).
 
@@ -67,7 +69,7 @@ Next, post-process the data with the below, replacing `<dataset_name>` with the 
 python scripts/process_data.py dataset_name=<dataset_name>
 ```
 
-## World Model Pretraining
+### World Model Pretraining
 
 Pretrain the world model with the below, replacing `<dataset_name>` with the name of the dataset in `~/simdist/datasets/sim/`. Checkpoints will be saved in `~/simdist/checkpoints/models/`; use `<run_name>` to specify the name of the checkpoints (optional). Optionally, launch with `wandb.log=true` and `wandb.entity=<your_wandb_entity_or_username>` to enable Weights and Biases logging. Additional configuration is found in [`config/train_model.yaml`](config/train_model.yaml).
 
@@ -75,7 +77,7 @@ Pretrain the world model with the below, replacing `<dataset_name>` with the nam
 python scripts/train_model.py data.dataset_name=<dataset_name> run_name=<run_name>
 ```
 
-## Deployment (Simulation)
+### Deployment (Simulation)
 
 Deploy, in simulation, the pretrained world model using sampling-based planning with the below, replacing `<checkpoint_name>` with the name of the checkpoint in `~/simdist/checkpoints/models/`. Use `--headless` to run without a GUI. Additional configuration is found in [`config/simulate_go2.yaml`](config/simulate_go2.yaml).
 
@@ -83,9 +85,9 @@ Deploy, in simulation, the pretrained world model using sampling-based planning 
 python scripts/simulate_go2.py model.checkpoint=<checkpoint_name>
 ```
 
-## Deployment (Hardware)
+## Deployment (Real-World Go2)
 
-### Hardware Setup (Go2)
+### Hardware Setup
 
 Perform the following steps on the computer running the robot, which is connected to the robot via Ethernet.
 
@@ -96,7 +98,7 @@ sudo apt-get update
 ./go2_ros2_ws/setup/docker_install.sh && ./go2_ros2_ws/setup/nvidia-container-toolkit.sh
 ```
 
-Next, build the container:
+Next, build the docker container:
 
 ```bash
 ./go2_ros2_ws/docker/build.sh
@@ -117,7 +119,7 @@ cp go2_ros2_ws/.env.example go2_ros2_ws/.env
 
 If motion capture will be used (such as Vicon or OptiTrack) for localization, set the IP address of the associated VRPN server. This is usually the IP address of the computer running the motion capture software. Do this by editing the `go2_ros2_ws/.env` file and setting `MOCAP_IP=<your_mocap_ip_address>`. Set the name of the tracker to `go2` in the motion capture software. Otherwise, localization will be accomplished with LIO.
 
-Start the container:
+Start the docker container:
 
 ```bash
 ./go2_ros2_ws/scripts/run.sh
@@ -129,9 +131,11 @@ Build the workspace:
 colcon build
 ```
 
+Configure the controller parameters in [go2_ros2_ws/src/config/config/simdist_controller.yaml](go2_ros2_ws/src/config/config/simdist_controller.yaml), specifically the `model` and `logging` sections, to specify which checkpoint to use and if and where to log real-world data. You may also configure the control task in [go2_ros2_ws/src/config/config/control.yaml](go2_ros2_ws/src/config/config/control.yaml). Any time you modify any of these configuration files, you must either rebuild with `colcon build` or restart the docker container (by exiting and restarting with `./go2_ros2_ws/scripts/run.sh`).
+
 ### Simulation Setup (Optional)
 
-It is possible to run all the ros2 nodes with a simulated Go2 in IsaacSim using the [go2_isaac_ros2](https://github.com/CLeARoboticsLab/go2_isaac_ros2) package. Follow the instructions in the repository to set it up.
+It is possible to run all the ros2 nodes with a simulated Go2 in IsaacSim using the [go2_isaac_ros2](https://github.com/CLeARoboticsLab/go2_isaac_ros2) package. Follow the instructions in the repository to set it up and run the simulation.
 
 ### Startup
 
@@ -153,7 +157,7 @@ Press the `start` button on the Unitree Go2 controller **twice** to stand the ro
 ros2 launch bringup launch_go2.py
 ```
 
-Next, start the controller with the below command; one of the tmux panes should already be populated with the command. You can configure the control task in [go2_ros2_ws/src/config/config/control.yaml](go2_ros2_ws/src/config/config/control.yaml) and the controller parameters in [go2_ros2_ws/src/config/config/simdist_controller.yaml](go2_ros2_ws/src/config/config/simdist_controller.yaml). Within the second file, you can specify if and where to log the real-world data. If you modify either of these files, you need to stop these conrol nodes, `colcon build`, and restart with the below command.
+Next, start the controller with the below command; one of the tmux panes should already be populated with the command. Within the second file, you can specify if and where to log the real-world data. If you modify either of these files, you need to stop these conrol nodes, `colcon build`, and restart with the below command.
 
 ```bash
 ros2 launch controller launch_go2.py
