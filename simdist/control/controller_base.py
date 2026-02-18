@@ -91,6 +91,14 @@ class ControllerBase:
         """Returns the actions for the given the measurements in the buffer."""
         raise NotImplementedError("Subclasses must implement this method.")
 
+    @property
+    def is_creating(self):
+        return self.is_initing
+
+    @property
+    def is_initialized(self):
+        return self.initialized
+
     def _init_fn(self):
         """Initializes the controller by calling the main control method once.
         Doing this JITs the function so that future calls are fast."""

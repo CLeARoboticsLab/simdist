@@ -22,6 +22,7 @@ mppi:
   seed: 42
 
 logging:
+  # log to the below dataset
   enabled: true
   # same of the dataset in the datasets/real directory to store data
-  dataset_name: final_vids/2025-09-11_new-ptfe-instamorph-4_c_d_ft-c/0.5
+  dataset_name: simdist_controller
