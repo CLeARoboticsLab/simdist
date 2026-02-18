@@ -1,0 +1,3 @@
+dataset_name:
+beg_padding: 25  # steps to pad at beginning of each episode with the first data point; ideally should match model prediction length
+control_rate: 50  # [Hz]

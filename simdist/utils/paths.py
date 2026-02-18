@@ -101,6 +101,10 @@ def get_simulate_go2_hydra_config():
     return {"config_path": get_config_dir(), "config_name": "simulate_go2"}
 
 
+def get_aggregate_realworld_data_hydra_config():
+    return {"config_path": get_config_dir(), "config_name": "aggregate_realworld_data"}
+
+
 def get_sim_dataset_dir(dataset_name: str):
     """Get the directory for a specific simulation dataset."""
     return os.path.join(_PATHS["SIM_DATASETS"], dataset_name)

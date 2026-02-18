@@ -136,6 +136,9 @@ class DataProcessor:
                 ep_extero_obs.extend(
                     [episode_data.data["obs"][name] for name in self.extero_obs_names]
                 )
+                ep_extero_obs = torch.cat(ep_extero_obs, dim=-1)
+            elif "extero_obs" in episode_data.data:
+                ep_extero_obs = episode_data.data["extero_obs"]
             else:
                 for name in self.extero_obs_names:
                     if name not in episode_data.data:
@@ -143,7 +146,7 @@ class DataProcessor:
                             f"Episode {ep_name} does not contain {name} in obs data."
                         )
                     ep_extero_obs.append(episode_data.data[name])
-            ep_extero_obs = torch.cat(ep_extero_obs, dim=-1)
+                ep_extero_obs = torch.cat(ep_extero_obs, dim=-1)
             extero_obs_np = _to_valid_numpy(ep_extero_obs)
             extero_obs_h5.append(extero_obs_np)
             self.stats_trackers["extero_obs"].update(extero_obs_np)

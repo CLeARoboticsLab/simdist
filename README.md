@@ -1,6 +1,6 @@
 # Simulation Distillation
 
-## Setup
+## Installation
 
 Create a new conda environment [optional, but recommended]:
 
@@ -131,7 +131,7 @@ Build the workspace:
 colcon build
 ```
 
-Configure the controller parameters in [go2_ros2_ws/src/config/config/simdist_controller.yaml](go2_ros2_ws/src/config/config/simdist_controller.yaml), specifically the `model` and `logging` sections, to specify which checkpoint to use and if and where to log real-world data. You may also configure the control task in [go2_ros2_ws/src/config/config/control.yaml](go2_ros2_ws/src/config/config/control.yaml). Any time you modify any of these configuration files, you must either rebuild with `colcon build` or restart the docker container (by exiting and restarting with `./go2_ros2_ws/scripts/run.sh`).
+Configure the controller parameters in [`go2_ros2_ws/src/config/config/simdist_controller.yaml`](go2_ros2_ws/src/config/config/simdist_controller.yaml), specifically the `model` and `logging` sections, to specify which checkpoint to use and if and where to log real-world data. You may also configure the control task in [`go2_ros2_ws/src/config/config/control.yaml`](go2_ros2_ws/src/config/config/control.yaml). Any time you modify any of these configuration files, you must either rebuild with `colcon build` or restart the docker container (by exiting and restarting with `./go2_ros2_ws/scripts/run.sh`).
 
 ### Simulation Setup (Optional)
 
@@ -170,3 +170,20 @@ While the robot is standing, press the `start` button on the Unitree Go2 control
 ### Shutdown
 
 Detach from the tmux session with `Ctrl + b`, then `d`. Stop the container with `exit`.
+
+
+## Dynamics Fintuning
+
+### Processing Real-World Data
+
+First, aggreage real wold data with the following, replacing `<dataset_name>` with the name of the dataset in `datasets/real`:
+
+```bash
+python scripts/aggregate_realworld_data.py dataset_name=<dataset_name>
+```
+
+Next, process the data the same way as in [Data Generation](#data-generation), with:
+
+```bash
+python scripts/process_data.py dataset_name=<dataset_name>
+```

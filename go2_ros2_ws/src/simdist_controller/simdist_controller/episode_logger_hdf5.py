@@ -5,12 +5,13 @@ import os
 import threading
 
 from simdist.utils import paths
+from simdist.data import REAL_DATA_KEYS
 
-TIME_KEY = "time"
-PROPRIO_KEY = "proprio_obs"
-EXTERO_KEY = "extero_obs"
-ACTS_KEY = "actions"
-CMDS_KEY = "commands"
+TIME_KEY = REAL_DATA_KEYS["time"]
+PROPRIO_KEY = REAL_DATA_KEYS["proprio_obs"]
+EXTERO_KEY = REAL_DATA_KEYS["extero_obs"]
+ACTS_KEY = REAL_DATA_KEYS["actions"]
+CMDS_KEY = REAL_DATA_KEYS["commands"]
 
 
 class HDF5EpisodeLogger:
