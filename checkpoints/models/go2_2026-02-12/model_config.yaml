@@ -1,0 +1,178 @@
+checkpoint:
+  enabled: true
+  max_to_keep: 3
+  resume_checkpoint: null
+data:
+  dataset_name: go2_2026-02-12
+  num_test_workers: 4
+  num_train_workers: 8
+  prefetch_factor: 2
+heads: {}
+loss:
+  type: world_model
+  weights:
+    action: 4.0
+    latent_dynamics: 1.0
+    reward: 1.0
+    value: 1.0
+model:
+  dataset:
+    augmentations:
+      add_noise: true
+    history_length: 25
+    prediction_length: 25
+    type: quadruped_world_model
+  dropout:
+    attention: 0.05
+    mlp: 0.2
+  dynamics:
+    attention:
+      heads: 8
+      layers: 2
+      mask: causal
+      mlp_hidden_size_factor: 4
+  embedding:
+    future_acts_layers: 0
+    future_cmds_layers: 0
+    mlp_hidden_size_factor: 2
+    reward_layers: 0
+    value_layers: 0
+  encoder:
+    action_layers: 0
+    extero_obs:
+      height_cnn:
+        features:
+        - 8
+        - 16
+        - 32
+        kernel_size: 3
+        projection_hidden_dims:
+        - 192
+        - 128
+        strides:
+        - 2
+        - 2
+        - 2
+    latent_layers: 2
+    mlp_hidden_size_factor: 2
+    proprio_obs_layers: 2
+  latent_dim: 64
+  policy:
+    attention:
+      heads: 8
+      layers: 4
+      mask: causal
+      mlp_hidden_size_factor: 4
+    decoder:
+      layers: 0
+      mlp_hidden_size_factor: 2
+  reward:
+    attention:
+      heads: 4
+      layers: 1
+      mask: null
+      mlp_hidden_size_factor: 4
+    decoder:
+      layers: 0
+      mlp_hidden_size_factor: 2
+  type: quadruped_world_model
+  value:
+    attention:
+      heads: 4
+      layers: 1
+      mask: null
+      mlp_hidden_size_factor: 4
+    decoder:
+      layers: 0
+      mlp_hidden_size_factor: 2
+run_name: go2_2026-02-12
+scaler_params_struct:
+  actions: 12
+  commands: 3
+  extero_obs: 315
+  proprio_obs: 35
+  rewards: 1
+  values: 1
+system:
+  actions:
+  - max_noise: 2.5
+    min_noise: 0.05
+    name: FR_hip_joint
+  - max_noise: 2.5
+    min_noise: 0.05
+    name: FR_thigh_joint
+  - max_noise: 2.5
+    min_noise: 0.05
+    name: FR_calf_joint
+  - max_noise: 2.5
+    min_noise: 0.05
+    name: FL_hip_joint
+  - max_noise: 2.5
+    min_noise: 0.05
+    name: FL_thigh_joint
+  - max_noise: 2.5
+    min_noise: 0.05
+    name: FL_calf_joint
+  - max_noise: 2.5
+    min_noise: 0.05
+    name: RR_hip_joint
+  - max_noise: 2.5
+    min_noise: 0.05
+    name: RR_thigh_joint
+  - max_noise: 2.5
+    min_noise: 0.05
+    name: RR_calf_joint
+  - max_noise: 2.5
+    min_noise: 0.05
+    name: RL_hip_joint
+  - max_noise: 2.5
+    min_noise: 0.05
+    name: RL_thigh_joint
+  - max_noise: 2.5
+    min_noise: 0.05
+    name: RL_calf_joint
+  cmd:
+    dim: 3
+  extero_obs:
+    types:
+    - dim:
+      - 21
+      - 15
+      name: height_scan
+      noise: 0.02
+  name: go2
+  proprio_obs:
+    types:
+    - dim: 3
+      name: base_lin_vel
+      noise: 0.05
+    - dim: 3
+      name: base_ang_vel
+      noise: 0.1
+    - dim: 3
+      name: projected_gravity
+      noise: 0.025
+    - dim: 12
+      name: joint_pos
+      noise: 0.01
+    - dim: 12
+      name: joint_vel
+      noise: 0.75
+    - dim: 2
+      name: cos_sin_phase
+      noise: 0.001
+training:
+  batch_size: 512
+  decay_steps: 400000
+  end_learning_rate: 0.0001
+  eval_interval: 10000
+  learning_rate: 0.0002
+  max_steps: null
+  num_epochs: 2
+  seed: 42
+  training_data_ratio: 0.998
+  warmup_steps: 10000
+wandb:
+  entity: clearoboticslab
+  log: true
+  project: simdist_train_model
