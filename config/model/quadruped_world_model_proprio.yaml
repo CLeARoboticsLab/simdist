@@ -1,0 +1,64 @@
+type: quadruped_world_model_proprio
+
+dataset:
+  type: quadruped_world_model
+  history_length: 25
+  prediction_length: 25
+  augmentations:
+    add_noise: true
+
+dropout:
+  mlp: 0.2
+  attention: 0.05
+
+latent_dim: 32
+
+encoder:
+  mlp_hidden_size_factor: 2
+  proprio_obs_layers: 2
+  action_layers: 0
+  latent_layers: 2
+
+embedding:
+  mlp_hidden_size_factor: 2
+  future_acts_layers: 0
+  future_cmds_layers: 0
+  reward_layers: 0
+  value_layers: 0
+
+dynamics:
+  attention:
+    layers: 2
+    heads: 8
+    mlp_hidden_size_factor: 4
+    mask: causal
+
+reward:
+  attention:
+    layers: 1
+    heads: 4
+    mlp_hidden_size_factor: 4
+    mask:  # causal or leave empty
+  decoder:
+    layers: 0
+    mlp_hidden_size_factor: 2
+
+value:
+  attention:
+    layers: 1
+    heads: 4
+    mlp_hidden_size_factor: 4
+    mask:  # causal or leave empty
+  decoder:
+    layers: 0
+    mlp_hidden_size_factor: 2
+
+policy:
+  attention:
+    layers: 4
+    heads: 8
+    mlp_hidden_size_factor: 4
+    mask: causal
+  decoder:
+    layers: 0
+    mlp_hidden_size_factor: 2

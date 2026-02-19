@@ -120,6 +120,87 @@ class QuadrupedEncoder(WorldModelEncoderBase):
         return latent
 
 
+class QuadrupedEncoderProprio(WorldModelEncoderBase):
+    def __init__(self, cfg: dict, rngs: nnx.Rngs):
+        super().__init__(cfg, rngs)
+
+        h_size = self.latent_dim * self.enc_cfg["mlp_hidden_size_factor"]
+        H = self.model_cfg["dataset"]["history_length"]
+        self.hist_enc_len = 2 * H
+
+        self.proprio_obs_proj = modules.MLP(
+            input_dim=self.proprio_obs_dim,
+            hidden_dims=[h_size] * self.enc_cfg["proprio_obs_layers"],
+            output_dim=self.latent_dim,
+            rngs=rngs,
+        )
+        self.act_proj = modules.MLP(
+            input_dim=self.act_dim,
+            hidden_dims=[h_size] * self.enc_cfg["action_layers"],
+            output_dim=self.latent_dim,
+            rngs=rngs,
+        )
+        self.latent_mlp = modules.MLP(
+            input_dim=self.proprio_obs_dim,
+            hidden_dims=[h_size] * self.enc_cfg["latent_layers"],
+            output_dim=self.latent_dim,
+            rngs=rngs,
+        )
+
+        self.temporal_enc = nnx.Param(
+            jax.random.normal(rngs["params"](), (H + 1, self.latent_dim)) * 0.02
+        )
+
+        num_types = 3  # proprio_obs, act, latent
+        self.type_enc = nnx.Param(
+            jax.random.normal(rngs["params"](), (num_types, self.latent_dim)) * 0.02
+        )
+
+    def __call__(
+        self,
+        x: types.WorldModelSchema.Inputs,
+        deterministic: bool | None = None,
+    ) -> types.WorldModelSchema.Encoding:
+        B = x["proprio_obs_hist"].shape[0]
+
+        # encode history
+        proprio_obs_hist = x["proprio_obs_hist"][:, :-1]
+        proprio_obs_hist = self.proprio_obs_proj(
+            proprio_obs_hist, deterministic=deterministic
+        )
+        act_hist = self.act_proj(x["acts_hist"], deterministic=deterministic)
+
+        # encode latent
+        last_proprio_obs = x["proprio_obs_hist"][:, -1]
+        latent = self.encode_latent(last_proprio_obs, None, deterministic=deterministic)
+
+        # temporal encoding
+        proprio_obs_hist += self.temporal_enc[:-1]
+        act_hist += self.temporal_enc[:-1]
+        latent += self.temporal_enc[-1]  # last time step
+
+        # type encoding
+        proprio_obs_hist += self.type_enc[0]
+        act_hist += self.type_enc[1]
+        latent += self.type_enc[2]
+
+        # interleave history
+        hist_enc = jnp.zeros((B, self.hist_enc_len, self.latent_dim))
+        hist_enc = hist_enc.at[:, 0::2].set(proprio_obs_hist)
+        hist_enc = hist_enc.at[:, 1::2].set(act_hist)
+
+        return {"history": hist_enc, "latent": latent}
+
+    def encode_latent(
+        self,
+        proprio_obs: jnp.ndarray,
+        extero_obs: jnp.ndarray,
+        deterministic: bool | None = None,
+    ) -> jnp.ndarray:
+        latent = self.latent_mlp(proprio_obs, deterministic=deterministic)
+        return latent
+
+
 class HeightMapEncoder(nnx.Module):
     def __init__(
         self,

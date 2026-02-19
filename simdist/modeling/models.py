@@ -257,3 +257,10 @@ class QuadrupedWorldModel(WorldModelBase):
     def __init__(self, cfg: dict, scaler_params: types.ScalerParams, rngs: nnx.Rngs):
         super().__init__(cfg, scaler_params, rngs)
         self.encoder = encoders.QuadrupedEncoder(cfg, rngs)
+
+
+@register_model("quadruped_world_model_proprio")
+class QuadrupedWorldModelProprio(WorldModelBase):
+    def __init__(self, cfg: dict, scaler_params: types.ScalerParams, rngs: nnx.Rngs):
+        super().__init__(cfg, scaler_params, rngs)
+        self.encoder = encoders.QuadrupedEncoderProprio(cfg, rngs)

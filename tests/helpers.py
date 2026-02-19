@@ -7,9 +7,7 @@ from simdist.modeling import types, models
 from simdist.utils import config, model as model_utils
 from simdist.data.dataset import WorldModelDatasetBase
 
-WORLD_MODEL_CONFIGS = [
-    "quadruped_world_model",
-]
+WORLD_MODEL_CONFIGS = ["quadruped_world_model", "quadruped_world_model_proprio"]
 
 
 def make_dummy_scaler_params(cfg: dict) -> types.ScalerParams:

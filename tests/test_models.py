@@ -10,6 +10,7 @@ import jax
 
 import helpers
 
+
 @pytest.mark.parametrize(
     "cfg",
     helpers.WORLD_MODEL_CONFIGS,
@@ -22,6 +23,7 @@ def test_world_models(cfg: dict):
     # create model
     model = helpers.make_dummy_model(cfg)
     model_inf_fn = jax.jit(model.inference)
+    model_type = cfg["model"]["type"]
 
     # create dummy model input
     model_in = helpers.make_dummy_world_model_input(cfg, B)
@@ -32,4 +34,7 @@ def test_world_models(cfg: dict):
     for _ in range(num_inferences):
         _ = jax.block_until_ready(model_inf_fn(model_in))
     end_time = time.perf_counter()
-    print(f"Average inference rate: {num_inferences / (end_time - start_time):.2f} Hz")
+    print(
+        f"Average inference rate for {model_type}: "
+        f"{num_inferences / (end_time - start_time):.2f} Hz"
+    )
