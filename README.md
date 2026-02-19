@@ -2,8 +2,8 @@
 
 This project implements **Simulation Distillation (SimDist)**, a scalable framework the distills structural priors from a simulator into a latent world model and enables rapid real-world adaptation via online planning and supervised dynamics finetuning.
 
-[![Website](docs/badges/badge-website.svg)](https://sim-dist.github.io/)
-[![Paper](docs/badges/badge-pdf.svg)](#)
+[![Website](docs/assets/badge-website.svg)](https://sim-dist.github.io/)
+[![Paper](docs/assets/badge-pdf.svg)](#)
 
 ## Installation
 
