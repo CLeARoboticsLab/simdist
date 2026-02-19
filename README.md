@@ -1,5 +1,10 @@
 # Simulation Distillation
 
+This project implements **Simulation Distillation (SimDist)**, a scalable framework the distills structural priors from a simulator into a latent world model and enables rapid real-world adaptation via online planning and supervised dynamics finetuning.
+
+[![Website](docs/badges/badge-website.svg)](https://sim-dist.github.io/)
+[![Paper](docs/badges/badge-pdf.svg)](#)
+
 ## Installation
 
 Create a new conda environment [optional, but recommended]:
@@ -194,3 +199,18 @@ Finetune the dynamics only of the world model with the below, replacing `<datase
 ```bash
 python scripts/finetune_model.py data.dataset_name=<real_dataset> checkpoint.resume_checkpoint=<resume_checkpoint> run_name=<run_name>
 ```
+
+## Acknowledgements
+
+For SLAM, We use the version of ["point_lio_unilidar"](https://github.com/unitreerobotics/point_lio_unilidar) from [`autonomy_stack_go2`](https://github.com/jizhang-cmu/autonomy_stack_go2) from @jizhang-cmu.
+
+## Citation
+
+Please cite our papers:
+
+```bibtex
+@InProceedings{levy2026simdist,
+  title={Simulation Distillation: Pretraining World Models in Simulation for Rapid Real-World Adaptation},
+  author={Jacob Levy and Tyler Westenbroek and Kevin Huang and Fernando Palafox and Patrick Yin and Shayegan Omidshafiei and Dong-Ki Kim and Abhishek Gupta and David Fridovich-Keil},
+  year={2026}
+}
