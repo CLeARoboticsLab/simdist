@@ -1,0 +1,7 @@
+type: "world_model"
+
+weights:
+  latent_dynamics: 1.0
+  reward: 0.0
+  value: 0.0
+  action: 0.0

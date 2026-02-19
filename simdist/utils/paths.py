@@ -2,9 +2,9 @@ import os
 import re
 from pathlib import Path
 
-THIS_MODULE_PATH = os.path.dirname(os.path.abspath(__file__))
-SIMDIST_MODULE_PATH = os.path.dirname(THIS_MODULE_PATH)
-SIMDIST_ROOT_PATH = os.path.dirname(SIMDIST_MODULE_PATH)
+_THIS_MODULE_PATH = os.path.dirname(os.path.abspath(__file__))
+_SIMDIST_MODULE_PATH = os.path.dirname(_THIS_MODULE_PATH)
+SIMDIST_ROOT_PATH = os.path.dirname(_SIMDIST_MODULE_PATH)
 _PATHS = {
     "RL_CHECKPOINTS": os.path.join(SIMDIST_ROOT_PATH, "checkpoints", "rl"),
     "CONFIG": os.path.join(SIMDIST_ROOT_PATH, "config"),
@@ -103,6 +103,10 @@ def get_simulate_go2_hydra_config():
 
 def get_aggregate_realworld_data_hydra_config():
     return {"config_path": get_config_dir(), "config_name": "aggregate_realworld_data"}
+
+
+def get_finetune_model_hydra_config():
+    return {"config_path": get_config_dir(), "config_name": "finetune_model"}
 
 
 def get_sim_dataset_dir(dataset_name: str):

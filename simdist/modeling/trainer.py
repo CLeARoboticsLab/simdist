@@ -19,6 +19,7 @@ from simdist.modeling import models, losses, types
 def train(cfg: dict):
     date_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     run_name = f"{date_time}" if cfg["run_name"] is None else cfg["run_name"]
+    finetuning = "finetune" in cfg and cfg["finetune"]
     train_steps = 0
 
     max_steps = None
@@ -87,9 +88,6 @@ def train(cfg: dict):
         generator=generator,
     )
 
-    # load scaler params
-    scaler_params = io.load_scaler_params(dataset.data_dir)
-
     # get the model
     ckpt_dir = None
     if (
@@ -102,14 +100,28 @@ def train(cfg: dict):
         ckpt_dir = os.path.join(paths.get_model_checkpoints_dir(), resume_checkpoint)
         model, model_cfg, train_steps = model_utils.load_model_from_ckpt(ckpt_dir)
         cfg["model"] = model_cfg["model"]  # use the model cfg from the checkpoint
+        if "scaler_params_struct" in model_cfg:
+            # If the model cfg has a scaler_params_struct, use it
+            cfg["scaler_params_struct"] = model_cfg["scaler_params_struct"]
         if max_steps is not None:
             max_steps += train_steps
+        if finetuning:
+            print("Finetuning the model...")
+    elif finetuning:
+        raise ValueError("checkpoint.resume_checkpoint must be given when finetuning.")
     else:
         # otherwise, create a new model
         print("Creating a new model...")
+        scaler_params = io.load_scaler_params(dataset.data_dir)
         model = models.get_model(
             cfg, scaler_params, rngs=nnx.Rngs(cfg["training"]["seed"])
         )
+
+        # get scaler params structure to store it later
+        struct = {}
+        for k, v in scaler_params.items():
+            struct[k] = len(v["mean"])
+        cfg["scaler_params_struct"] = struct
 
     # Setup checkpointing with Orbax
     if cfg["checkpoint"]["enabled"]:
@@ -119,16 +131,12 @@ def train(cfg: dict):
             cleanup_tmp_directories=True,
             enable_async_checkpointing=False,
         )
-        if ckpt_dir is None:
+        if ckpt_dir is None or finetuning:
             ckpt_dir = os.path.join(paths.get_model_checkpoints_dir(), run_name)
             os.makedirs(ckpt_dir, exist_ok=True)
             with open(
                 os.path.join(ckpt_dir, paths.get_model_config_filename()), "w"
             ) as f:
-                struct = {}
-                for k, v in scaler_params.items():
-                    struct[k] = len(v["mean"])
-                cfg["scaler_params_struct"] = struct
                 yaml.dump(cfg, f, default_flow_style=False)
 
     # Get the loss function
