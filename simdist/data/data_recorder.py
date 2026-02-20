@@ -37,6 +37,8 @@ class DataRecorder:
         self.expert_policy, self.critic = get_actor_critic_from_iteration(
             run_name, cfg["expert"], self.device
         )
+        if self.critic is None:
+            raise FileNotFoundError(f"Critic file not found for {run_name}")
         self.non_expert_policies = [
             get_actor_critic_from_iteration(run_name, i, self.device)[0]
             for i in cfg["non_experts"]

@@ -30,12 +30,13 @@ def get_actor_critic_from_iteration(
     if not os.path.exists(policy_path):
         raise FileNotFoundError(f"Policy file not found: {policy_path}")
     if not os.path.exists(critic_path):
-        raise FileNotFoundError(f"Critic file not found: {critic_path}")
+        critic = None
     print(f"Found policy: {policy_path}")
     print(f"Found critic: {critic_path}")
 
     policy = torch.jit.load(policy_path).eval().to(device)
-    critic = torch.jit.load(critic_path).eval().to(device)
+    if critic:
+        critic = torch.jit.load(critic_path).eval().to(device)
 
     return policy, critic
 
