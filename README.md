@@ -16,7 +16,7 @@
 </p>
 
 [![Website](docs/assets/badge-website.svg)](https://sim-dist.github.io/)
-[![Paper](docs/assets/badge-pdf.svg)](#)
+[![Paper](docs/assets/badge-pdf.svg)](https://arxiv.org/abs/2603.15759)
 </div>
 
 <!-- ##  -->
@@ -56,8 +56,11 @@ For SLAM, We use the version of ["point_lio_unilidar"](https://github.com/unitre
 If you find our work helpful, please cite:
 
 ```bibtex
-@InProceedings{levy2026simdist,
+@article{2026simdist,
   title={Simulation Distillation: Pretraining World Models in Simulation for Rapid Real-World Adaptation},
-  author={Jacob Levy and Tyler Westenbroek and Kevin Huang and Fernando Palafox and Patrick Yin and Shayegan Omidshafiei and Dong-Ki Kim and Abhishek Gupta and David Fridovich-Keil},
-  year={2026}
+  author={Levy, Jacob and Westenbroek, Tyler and Huang, Kevin and Palafox, Fernando and Yin, Patrick and Omidshafiei, Shayegan and Kim, Dong-Ki and Gupta, Abhishek and Fridovich-Keil, David},
+  journal={arXiv preprint arXiv:2603.15759},
+  year={2026},
+  url={https://arxiv.org/abs/2603.15759}
 }
+```
